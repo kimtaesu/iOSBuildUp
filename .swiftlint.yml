@@ -1,0 +1,24 @@
+disabled_rules:
+- line_length
+- trailing_whitespace
+- vertical_whitespace
+- identifier_name
+- file_length
+- vertical_parameter_alignment
+- function_body_length
+- unused_optional_binding
+- cyclomatic_complexity
+- large_tuple
+- type_body_length
+- type_name
+- nesting
+included:
+
+excluded:
+- Carthage
+- Pods
+- Lin
+- "**/*Tests.swift"
+- "**/*Spec.swift"
+- "**/*.*generated.swift"
+- "*.*generated.swift"
