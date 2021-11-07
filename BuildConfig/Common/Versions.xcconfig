@@ -1,0 +1,18 @@
+//
+//  Version.xcconfig
+//  Numero
+//
+//  Created by tskim on 07/10/2019.
+//  Copyright © 2019 Facebook. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+// major.minor.patch
+
+
+MAIN_BUNDLE_VERSION = 1.11.0
+INFO_BUNDLE_VERSION = $(BUNDLE_VERSION)
+LONG_BUNDLE_VERSION = 106
+ALAPHA_VERSION = 2

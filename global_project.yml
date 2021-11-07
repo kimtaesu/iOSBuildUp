@@ -1,0 +1,12 @@
+options:
+  usesTabs: false
+  indentWidth: 2
+  tabWidth: 2
+  developmentLanguage: ko
+  deploymentTarget:
+    iOS: 13.0
+  
+settingGroups:
+  app:
+    TARGETED_DEVICE_FAMILY: 1
+    SWIFT_VERSION: 5.0

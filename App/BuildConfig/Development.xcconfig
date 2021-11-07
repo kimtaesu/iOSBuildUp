@@ -1,0 +1,17 @@
+//
+//  Development.xcconfig
+//  Ziccha
+//
+//  Created by Tyler on 2019/11/13.
+//  Copyright © 2019 엄기철. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "../Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"
+#include "../BuildConfig/BuildType/Debug.BuildType.xcconfig"
+#include "../BuildConfig/Common/Common.xcconfig"
+#include "../BuildConfig/Common/Combine.xcconfig"
+
+DISPLAY_NAME = [DEV]iOS 빌드업

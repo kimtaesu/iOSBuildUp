@@ -1,0 +1,16 @@
+//
+//  Release.BuildType.xcconfig
+//  Numero
+//
+//  Created by tskim on 07/10/2019.
+//  Copyright © 2019 Facebook. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+ONLY_ACTIVE_ARCH = YES
+VALIDATE_PRODUCT = YES
+SWIFT_OPTIMIZATION_LEVEL = -O
+ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = $(inherited)
+BUNDLE_VERSION = $(MAIN_BUNDLE_VERSION)-alpha.$(ALAPHA_VERSION)

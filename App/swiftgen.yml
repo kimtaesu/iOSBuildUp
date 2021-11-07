@@ -1,0 +1,35 @@
+input_dir: ${PROJECT_DIR}
+output_dir: Sources/Resources/Generated
+
+strings:
+  inputs: Sources/Base.lproj/Localizable.strings
+  outputs:
+    templateName: structured-swift4
+    output: L10n.swift
+    params:
+      publicAccess: 1
+      enumName: L10n
+  fallback: Base
+
+xcassets:
+  inputs: Sources/Resources/Assets.xcassets
+  outputs:
+    templateName: swift4
+    output: Assets.swift
+    params:
+      publicAccess: 1
+
+fonts:
+  inputs: Sources/Resources/Fonts
+  outputs:
+    templateName: swift4
+    output: Fonts.swift
+    params:
+      publicAccess: 1
+colors:
+  inputs: Sources/Resources/color.txt
+  outputs:
+    templateName: swift5
+    output: MyColor.swift
+    params:
+      publicAccess: 1

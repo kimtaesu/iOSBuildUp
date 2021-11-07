@@ -1,0 +1,40 @@
+name: App
+include: 
+  - ../global_project.yml
+
+targets:
+  App:
+    type: application
+    platform: iOS
+    schemes:
+      templates: 
+        - Apps
+    configFiles:
+      Debug: ../App/BuildConfig/Development.xcconfig
+      Release: ../App/BuildConfig/Production.xcconfig
+
+    sources:
+      - Sources/
+    settings:
+       groups: [app]
+       base:
+        PRODUCT_BUNDLE_IDENTIFIER: assin.ios.buildup
+
+    preBuildScripts:
+      - script: $PODS_ROOT/SwiftGen/bin/swiftgen config run --config swiftgen.yml --verbose
+        name: SwiftGen
+    postBuildScripts:
+        - script: ${PODS_ROOT}/SwiftLint/swiftlint --path ../.swiftlint.yml
+          name: SwiftLint
+
+
+schemes:
+  Ziccha:
+    build:
+      targets:
+        App: all
+    run:
+      config: Debug
+      language: ko
+    test:
+      gatherCoverageData: true

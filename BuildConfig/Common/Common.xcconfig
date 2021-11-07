@@ -1,0 +1,23 @@
+//
+//  Common.xcconfig
+//  Numero
+//
+//  Created by tskim on 07/10/2019.
+//  Copyright © 2019 Facebook. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+#include "Versions.xcconfig"
+//
+//
+//// https://pewpewthespells.com/blog/buildsettings.html#sdkroot
+//// whether macosx or iphoneos
+//SDKROOT = iphoneos
+//
+//// https://pewpewthespells.com/blog/buildsettings.html#targeted_device_family
+//// 1: iPhone/iPod touch.
+//// 2: iPad.
+//TARGETED_DEVICE_FAMILY = 1
+//
+//SWIFT_VERSION = 5
