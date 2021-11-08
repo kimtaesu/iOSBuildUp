@@ -1,7 +1,5 @@
 options:
   usesTabs: false
-  indentWidth: 2
-  tabWidth: 2
   developmentLanguage: ko
   deploymentTarget:
     iOS: 13.0

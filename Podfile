@@ -1,6 +1,6 @@
 # Uncomment the next line to define a global platform for your project
 
-platform :ios, '12.0'
+platform :ios, '13.0'
 
 workspace 'iOSBuildUp.xcworkspace'
 inhibit_all_warnings!
@@ -12,12 +12,17 @@ target 'App' do
 
   pod 'SwiftGen'
   pod 'SwiftLint'
-
+  pod 'XCoordinator', '~> 2.0'
+  pod 'RxSwift', '6.2.0'
+  pod 'RxCocoa', '6.2.0'
+  pod 'ReactorKit'
+  pod 'Firebase/Analytics'
+  
   post_install do |installer|
     
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
       end
     end
   end
