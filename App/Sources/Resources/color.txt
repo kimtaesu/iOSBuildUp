@@ -1,14 +1,4 @@
 
-Primary: #654CBF
-222: #222222
+Primary: #1EB980
+Accent: #39A5C6
 888: #888888
-BBB: #BBBBBB
-D4: #D4D4D4
-Acc2: #39A5C6
-Acc4: #FF6666
-E5: #E5E5E5
-Negative: #DD2222
-CCC: #CCCCCC
-
-555: #555555
-

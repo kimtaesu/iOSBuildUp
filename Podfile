@@ -15,8 +15,18 @@ target 'App' do
   pod 'XCoordinator', '~> 2.0'
   pod 'RxSwift', '6.2.0'
   pod 'RxCocoa', '6.2.0'
+  pod 'RxOptional'
   pod 'ReactorKit'
+  pod 'RxViewController'
+  pod 'GoogleSignIn'
+  
+  pod 'SwiftyBeaver'
+  pod 'SnapKit', '~> 5.0.0'
+  # Firebase
   pod 'Firebase/Analytics'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+
   
   post_install do |installer|
     

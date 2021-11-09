@@ -8,6 +8,7 @@
 import Foundation
 import XCoordinator
 
+
 enum MainRoute: Route {
     case home
     case search
@@ -22,18 +23,18 @@ class MainTabCoordinator: TabBarCoordinator<MainRoute> {
     private let favoriteRouter: StrongRouter<FavoriteRoute>
     private let appInfoRouter: StrongRouter<AppInfoRoute>
     
-    convenience init() {
-        let homeCoordinator = HomeCoordinator()
-        homeCoordinator.rootViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .recents, tag: 0)
+    convenience init(buildUpService: BuildUpServiceType) {
+        let homeCoordinator = HomeCoordinator(buildUpService: buildUpService)
+        homeCoordinator.rootViewController.tabBarItem = MainTabItem.home.tabItem
 
         let searchCoordinator = SearchCoordinator()
-        searchCoordinator.rootViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 1)
+        searchCoordinator.rootViewController.tabBarItem = MainTabItem.search.tabItem
         
         let favoriteCoordinator = FavoriteCoordinator()
-        favoriteCoordinator.rootViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 2)
+        favoriteCoordinator.rootViewController.tabBarItem = MainTabItem.bookmark.tabItem
         
-        let appInfoCoordinator = AppInfoCoordinator()
-        appInfoCoordinator.rootViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .contacts, tag: 3)
+        let appInfoCoordinator = AppMenuCoordinator()
+        appInfoCoordinator.rootViewController.tabBarItem = MainTabItem.menu.tabItem
         
         self.init(
             homeRouter: homeCoordinator.strongRouter,

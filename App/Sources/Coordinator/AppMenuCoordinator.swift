@@ -14,7 +14,7 @@ enum AppInfoRoute: Route {
     case home
 }
 
-class AppInfoCoordinator: NavigationCoordinator<AppInfoRoute> {
+class AppMenuCoordinator: NavigationCoordinator<AppInfoRoute> {
   
   init() {
     super.init(initialRoute: .home)

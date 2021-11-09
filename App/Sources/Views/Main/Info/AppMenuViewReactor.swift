@@ -8,7 +8,7 @@
 import Foundation
 import ReactorKit
 
-final class AppInfoViewReactor: Reactor {
+final class AppMenuViewReactor: Reactor {
   
   let initialState: State
   

@@ -10,8 +10,6 @@ import UIKit
 
 class AppMenuViewController: UIViewController {
   
-  var disposeBag: DisposeBag = DisposeBag()
-  
   init(reactor: Reactor) {
     super.init(nibName: nil, bundle: nil)
     self.reactor = reactor
@@ -28,8 +26,8 @@ class AppMenuViewController: UIViewController {
 
 import ReactorKit
 
-extension AppMenuViewController: ReactorKit.View {
-    typealias Reactor = SearchViewReactor
+extension AppMenuViewController: ReactorKit.View, HasDisposeBag {
+    typealias Reactor = AppMenuViewReactor
     
     func bind(reactor: Reactor) {
             
