@@ -18,7 +18,10 @@ target 'App' do
   pod 'RxOptional'
   pod 'ReactorKit'
   pod 'RxViewController'
+  pod 'RxDataSources'
   pod 'GoogleSignIn'
+  pod 'ReusableKit'
+  pod 'ManualLayout'
   
   pod 'SwiftyBeaver'
   pod 'SnapKit', '~> 5.0.0'

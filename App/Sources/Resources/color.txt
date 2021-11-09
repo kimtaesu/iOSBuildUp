@@ -1,4 +1,9 @@
 
 Primary: #1EB980
-Accent: #39A5C6
+Accent: #EA4C89
 888: #888888
+
+
+AppMenuHeaderBG: #F6F6F6
+AppMenuHeaderTitle: #9C9C9C
+AppMenuActionMenuBG: #F2F2F2

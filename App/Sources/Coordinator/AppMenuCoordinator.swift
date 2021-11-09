@@ -23,8 +23,8 @@ class AppMenuCoordinator: NavigationCoordinator<AppInfoRoute> {
   override func prepareTransition(for route: AppInfoRoute) -> NavigationTransition {
     switch route {
     case .home:
-      let reactor = HomeViewReactor()
-      let viewController = HomeViewController(reactor: reactor)
+      let reactor = AppMenuViewReactor()
+      let viewController = AppMenuViewController(reactor: reactor)
       return .push(viewController)
     }
   }

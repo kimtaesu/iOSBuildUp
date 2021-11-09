@@ -27,6 +27,7 @@ public enum Asset {
   public static let tabMenu = ImageAsset(name: "tab_menu")
   public static let tabSearch = ImageAsset(name: "tab_search")
   public static let apple = ImageAsset(name: "apple")
+  public static let github = ImageAsset(name: "github")
   public static let google = ImageAsset(name: "google")
   public static let joinIcon = ImageAsset(name: "join_icon")
 }

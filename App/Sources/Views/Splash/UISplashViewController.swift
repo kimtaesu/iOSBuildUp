@@ -9,11 +9,14 @@ import UIKit
 import XCoordinator
 
 // https://icons8.com/icons/set/tetris
-class UISplashViewController: UIViewController {
+class UISplashViewController: BaseViewController {
   
-    init(reactor: Reactor) {
+    private let onNext: () -> Void
+    
+    init(reactor: Reactor, onNext: @escaping () -> Void) {
         defer { self.reactor = reactor }
-        super.init(nibName: nil, bundle: nil)
+        self.onNext = onNext
+        super.init()
     }
 
     required init?(coder: NSCoder) {
@@ -40,7 +43,10 @@ extension UISplashViewController: ReactorKit.View, HasDisposeBag {
             .distinctUntilChanged()
             .debug("getUsers")
             .filterNil()
-            .subscribe()
+            .take(1)
+            .subscribe(onNext: { [weak self] user in
+                self?.onNext()
+            })
             .disposed(by: self.disposeBag)
     }
 }

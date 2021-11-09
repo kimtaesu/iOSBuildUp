@@ -21,9 +21,18 @@ public struct ColorName {
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#888888"></span>
   /// Alpha: 100% <br/> (0x888888ff)
   public static let _888 = ColorName(rgbaValue: 0x888888ff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#39a5c6"></span>
-  /// Alpha: 100% <br/> (0x39a5c6ff)
-  public static let accent = ColorName(rgbaValue: 0x39a5c6ff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#ea4c89"></span>
+  /// Alpha: 100% <br/> (0xea4c89ff)
+  public static let accent = ColorName(rgbaValue: 0xea4c89ff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#f2f2f2"></span>
+  /// Alpha: 100% <br/> (0xf2f2f2ff)
+  public static let appMenuActionMenuBG = ColorName(rgbaValue: 0xf2f2f2ff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#f6f6f6"></span>
+  /// Alpha: 100% <br/> (0xf6f6f6ff)
+  public static let appMenuHeaderBG = ColorName(rgbaValue: 0xf6f6f6ff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#9c9c9c"></span>
+  /// Alpha: 100% <br/> (0x9c9c9cff)
+  public static let appMenuHeaderTitle = ColorName(rgbaValue: 0x9c9c9cff)
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#1eb980"></span>
   /// Alpha: 100% <br/> (0x1eb980ff)
   public static let primary = ColorName(rgbaValue: 0x1eb980ff)
