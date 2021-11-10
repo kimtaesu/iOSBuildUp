@@ -10,21 +10,32 @@ target 'App' do
   inherit! :search_paths
   project 'App/App.xcodeproj'
 
-  pod 'SwiftGen'
-  pod 'SwiftLint'
-  pod 'XCoordinator', '~> 2.0'
+  # Rx
   pod 'RxSwift', '6.2.0'
   pod 'RxCocoa', '6.2.0'
   pod 'RxOptional'
   pod 'ReactorKit'
   pod 'RxViewController'
   pod 'RxDataSources'
+  
+  pod 'SwiftGen'
+  pod 'SwiftLint'
+  
+  
+  # Sns
   pod 'GoogleSignIn'
+  
+  # Logger
+  pod 'SwiftyBeaver'
+  
+  # UI
+  pod 'SnapKit', '~> 5.0.0'
   pod 'ReusableKit'
   pod 'ManualLayout'
+  pod 'SimpleCheckbox'
+  pod 'SVProgressHUD'
+  pod 'XCoordinator', '~> 2.0'
   
-  pod 'SwiftyBeaver'
-  pod 'SnapKit', '~> 5.0.0'
   # Firebase
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'

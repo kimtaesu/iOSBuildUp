@@ -16,13 +16,21 @@ final class UIBuildUpViewReactor: Reactor {
     let initialState: State
     
     enum Action {
-        
+        case nextQuestion
     }
     
     enum Mutation {
+        case setLoading(Bool)
+        case setDocument(QuestionDocument)
     }
     
     struct State {
+        var isLoading: Bool = false
+        var document: QuestionDocument?
+        var question: String?
+        var choices: [CheckChoice]?
+        
+        var sections: [BuildUpSection] = []
         
     }
     
@@ -34,10 +42,40 @@ final class UIBuildUpViewReactor: Reactor {
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
-        return .empty()
+        switch action {
+        case .nextQuestion:
+            guard !self.currentState.isLoading else { return .empty() }
+            let startLoading: Observable<Mutation> = .just(.setLoading(true))
+            let nextQuestion: Observable<Mutation> = self.buildUpService.nextQuestion()
+                .map(Mutation.setDocument)
+            let endLoading: Observable<Mutation> = .just(.setLoading(false))
+            return Observable.concat(startLoading, nextQuestion, endLoading)
+        }
     }
     func reduce(state: State, mutation: Mutation) -> State {
+        var state = state
+        switch mutation {
+        case .setLoading(let isLoading):
+            state.isLoading = isLoading
+        case .setDocument(let document):
+            state.document = document
+            state.sections = self.makeSections(doc: document)
+        }
         return state
     }
 }
 
+
+extension UIBuildUpViewReactor {
+    func makeSections(doc: QuestionDocument) -> [BuildUpSection] {
+        
+        let choiceSectionItems = doc.chioces
+            .map(CheckChoiceCellReactor.init)
+            .map(BuildUpSectionItem.checkChioce)
+        
+        return [
+            .questions([.question(doc.question)]),
+            .answers(choiceSectionItems)
+        ]
+    }
+}

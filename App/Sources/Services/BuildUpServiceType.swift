@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import RxSwift
+
 
 protocol BuildUpServiceType: AnyObject {
-    
+    func nextQuestion() -> Observable<QuestionDocument>
 }
 
 

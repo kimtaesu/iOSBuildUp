@@ -11,6 +11,7 @@ import UIKit
 import RxOptional
 
 enum AppRoute: Route {
+  case splash
   case home
 }
 
@@ -25,13 +26,19 @@ class AppCoordinator: NavigationCoordinator<AppRoute> {
     ) {
         self.authService = authService
         self.buildUpService = buildUpService
-        super.init(initialRoute: .home)
+        super.init(initialRoute: .splash)
     }
     override func prepareTransition(for route: AppRoute) -> NavigationTransition {
         switch route {
+        case .splash:
+            let dependency = UISplashViewController.Reactor.Dependency(authService: self.authService, router: self.unownedRouter)
+            let reactor = UISplashViewController.Reactor(dependency: dependency)
+            let splashViewController = UISplashViewController(reactor: reactor)
+            return .push(splashViewController)
         case .home:
             let mainCoordinator = MainTabCoordinator(buildUpService: self.buildUpService)
-            return .set([mainCoordinator])
+            mainCoordinator.viewController.modalPresentationStyle = .fullScreen
+            return .present(mainCoordinator.strongRouter, animation: .fade)
         }
     }
 }

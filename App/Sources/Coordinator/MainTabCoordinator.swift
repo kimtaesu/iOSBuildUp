@@ -55,6 +55,8 @@ class MainTabCoordinator: TabBarCoordinator<MainRoute> {
         self.favoriteRouter = favoriteRouter
         self.appInfoRouter = appInfoRouter
         super.init(tabs: [homeRouter, searchRouter, favoriteRouter, appInfoRouter], select: homeRouter)
+        self.rootViewController.tabBar.isTranslucent = false
+//        print("!!!!!!!!! \()")
     }
   
     override func prepareTransition(for route: MainRoute) -> TabBarTransition {

@@ -9,14 +9,17 @@ import UIKit
 import XCoordinator
 
 // https://icons8.com/icons/set/tetris
-class UISplashViewController: BaseViewController {
-  
-    private let onNext: () -> Void
+class UISplashViewController: UIViewController {
     
-    init(reactor: Reactor, onNext: @escaping () -> Void) {
+    private let launchImageView: UIImageView = {
+        let image = UIImageView()
+        image.image = Asset.launchTetris.image
+        return image
+    }()
+    
+    init(reactor: Reactor) {
         defer { self.reactor = reactor }
-        self.onNext = onNext
-        super.init()
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -24,7 +27,14 @@ class UISplashViewController: BaseViewController {
     }
 
     override func viewDidLoad() {
-      super.viewDidLoad()
+        super.viewDidLoad()
+        self.view.addSubview(self.launchImageView)
+        
+        self.launchImageView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.equalTo(120)
+            $0.height.equalTo(self.launchImageView.snp.width)
+        }
     }
 }
 
@@ -44,9 +54,7 @@ extension UISplashViewController: ReactorKit.View, HasDisposeBag {
             .debug("getUsers")
             .filterNil()
             .take(1)
-            .subscribe(onNext: { [weak self] user in
-                self?.onNext()
-            })
+            .subscribe()
             .disposed(by: self.disposeBag)
     }
 }

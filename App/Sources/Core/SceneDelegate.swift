@@ -21,7 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
     
-    private lazy var mainCoordinator = MainTabCoordinator(buildUpService: self.buildUpService)
+    private lazy var appCoordinator: AppCoordinator = {
+        return AppCoordinator(authService: self.authService, buildUpService: self.buildUpService)
+    }()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -32,17 +34,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
 //        window.backgroundColor = .white
-//        self.appCoordinator.setRoot(for: window)
-        
-        let authService = FirebaseAuthService()
-        let reactor = UISplashViewController.Reactor(authService: authService)
-        let viewController = UISplashViewController(reactor: reactor, onNext: { [weak self] in
-            self?.mainCoordinator.setRoot(for: window)
-        })
-        window.backgroundColor = .white
+        let dependency = UIBuildUpViewReactor.Dependency.init(buildUpService: self.buildUpService)
+        let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
+        let viewController = UIBuildUpViewController(reactor: reactor)
         window.rootViewController = viewController
         window.makeKeyAndVisible()
-
+        window.backgroundColor = .white
+//        self.appCoordinator.setRoot(for: window)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

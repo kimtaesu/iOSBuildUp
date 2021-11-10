@@ -12,6 +12,7 @@ final class UISplashViewReactor: Reactor {
     
     struct Dependency {
         let authService: AuthServiceType
+        let router: UnownedRouter<AppRoute>
     }
     
     let initialState: State
@@ -21,6 +22,7 @@ final class UISplashViewReactor: Reactor {
     }
     enum Mutation {
         case setUser(AppUser)
+        case nextScreen
     }
     
     struct State {
@@ -28,11 +30,13 @@ final class UISplashViewReactor: Reactor {
     }
     
     private let authService: AuthServiceType
+    private let router: UnownedRouter<AppRoute>
     
     init(
-        authService: AuthServiceType
+        dependency: Dependency
     ) {
-        self.authService = authService
+        self.authService = dependency.authService
+        self.router = dependency.router
         self.initialState = State()
     }
     
@@ -41,7 +45,7 @@ final class UISplashViewReactor: Reactor {
         case .getUser:
             let setUser = self.authService.getUserIfNeedAnonymous()
                 .map(Mutation.setUser)
-            return Observable.concat(setUser)
+            return Observable.concat(setUser, Observable.just(Mutation.nextScreen))
             
         }
     }
@@ -50,6 +54,9 @@ final class UISplashViewReactor: Reactor {
         switch mutation {
         case  .setUser(let user):
             state.user = user
+        case .nextScreen:
+            // TODO: Test Case
+            self.router.trigger(AppRoute.home)
         }
         return state
     }

@@ -518,9 +518,12 @@ PODS:
   - RxViewController (2.0.0):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
+  - SimpleCheckbox (2.1.0)
   - SnapKit (5.0.1)
+  - SVProgressHUD (2.2.5)
   - SwiftGen (6.5.1)
   - SwiftLint (0.45.0)
+  - SwiftRichString (3.7.2)
   - SwiftyBeaver (1.9.5)
   - WeakMapTable (1.2.0)
   - XCoordinator (2.0.7):
@@ -540,9 +543,12 @@ DEPENDENCIES:
   - RxOptional
   - RxSwift (= 6.2.0)
   - RxViewController
+  - SimpleCheckbox
   - SnapKit (~> 5.0.0)
+  - SVProgressHUD
   - SwiftGen
   - SwiftLint
+  - SwiftRichString
   - SwiftyBeaver
   - XCoordinator (~> 2.0)
 
@@ -579,9 +585,12 @@ SPEC REPOS:
     - RxRelay
     - RxSwift
     - RxViewController
+    - SimpleCheckbox
     - SnapKit
+    - SVProgressHUD
     - SwiftGen
     - SwiftLint
+    - SwiftRichString
     - SwiftyBeaver
     - WeakMapTable
     - XCoordinator
@@ -618,13 +627,16 @@ SPEC CHECKSUMS:
   RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
   RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   RxViewController: 56486fa0afd629a1d6b5ba077f3b8cd9dc31b5d2
+  SimpleCheckbox: ddcd433ab8c3a8f57300bebda13151a8f302c7f9
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
   SwiftLint: e5c7f1fba68eccfc51509d5b2ce1699f5502e0c7
+  SwiftRichString: d61b807db1f8834c26fee92b6dd3e1be2dc5af03
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   WeakMapTable: 05c694ce8439a7a9ebabb56187287a63c57673d6
   XCoordinator: 9ee654fedef1ffede33d5c11677708a555c00542
 
-PODFILE CHECKSUM: 83a60e6150a54fbce0a08872db932b31ef6cd87e
+PODFILE CHECKSUM: eb2f8ad8ad1340784a96bef835426ae844ca1877
 
 COCOAPODS: 1.11.2
