@@ -15,7 +15,19 @@ final class FireStoreBuildUpService: BuildUpServiceType {
             chioces: [
                 .init(answers: "A", isCorrect: true),
                 .init(answers: "B", isCorrect: false)
-        ])
+            ],
+            tags: [
+                .init(id: "A", title: "RxSwift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+                .init(id: "B", title: "Swift"),
+            ]
+        )
         return .just(res)
     }
 }

@@ -17,8 +17,13 @@ class UISplashViewController: UIViewController {
         return image
     }()
     
-    init(reactor: Reactor) {
+    private let onNext: () -> Void
+    init(
+        reactor: Reactor,
+        onNext: @escaping () -> Void
+    ) {
         defer { self.reactor = reactor }
+        self.onNext = onNext
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -54,7 +59,9 @@ extension UISplashViewController: ReactorKit.View, HasDisposeBag {
             .debug("getUsers")
             .filterNil()
             .take(1)
-            .subscribe()
+            .subscribe(onNext: { [weak self] _ in
+                self?.onNext()
+            })
             .disposed(by: self.disposeBag)
     }
 }

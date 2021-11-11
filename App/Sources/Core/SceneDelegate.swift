@@ -33,13 +33,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         self.window = window
-//        window.backgroundColor = .white
-        let dependency = UIBuildUpViewReactor.Dependency.init(buildUpService: self.buildUpService)
-        let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
-        let viewController = UIBuildUpViewController(reactor: reactor)
-        window.rootViewController = viewController
+        
+        
+        let splashReactor = UISplashViewReactor(authService: self.authService)
+        let splashViewController = UISplashViewController(reactor: splashReactor, onNext: {
+            let dependency = UIBuildUpViewReactor.Dependency.init(buildUpService: self.buildUpService)
+            let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
+            let viewController = UIBuildUpViewController(reactor: reactor)
+            window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
+        })
+        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white
+        
 //        self.appCoordinator.setRoot(for: window)
     }
 

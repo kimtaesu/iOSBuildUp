@@ -8,6 +8,11 @@
 import Foundation
 
 
+struct Tag: Equatable {
+    let id: String
+    let title: String
+}
+
 struct AttributeQuestion: Equatable {
     let question: String
 }
@@ -15,6 +20,7 @@ struct AttributeQuestion: Equatable {
 struct QuestionDocument: Equatable {
     let question: AttributeQuestion
     let chioces: [CheckChoice]
+    let tags: [Tag]
 }
 
 struct CheckChoice: Equatable {

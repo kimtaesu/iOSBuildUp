@@ -35,7 +35,7 @@ class AttributeQuestionCell: UICollectionViewCell {
         }
         
         self.questionLabel.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.leading.top.trailing.equalToSuperview()
         }
     }
     
@@ -49,10 +49,9 @@ class AttributeQuestionCell: UICollectionViewCell {
 }
 
 extension AttributeQuestionCell {
-    class func size(_ width: CGFloat, _ height: CGFloat, question: AttributeQuestion) -> CGSize {
+    class func size(_ width: CGFloat, _ viewHeight: CGFloat, question: AttributeQuestion) -> CGSize {
         let height = snap(question.question.height(thatFitsWidth: width, font: Font.question, maximumNumberOfLines: 0))
-        let minHeight = snap(height * 0.3)
-        
+        let minHeight = snap(viewHeight * 0.3)
         return .init(width: width, height: max(height, minHeight))
     }
 }

@@ -16,6 +16,7 @@ final class UIBuildUpViewReactor: Reactor {
     let initialState: State
     
     enum Action {
+        case tapNext
         case nextQuestion
     }
     
@@ -43,6 +44,8 @@ final class UIBuildUpViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .tapNext:
+            return .empty()
         case .nextQuestion:
             guard !self.currentState.isLoading else { return .empty() }
             let startLoading: Observable<Mutation> = .just(.setLoading(true))
@@ -73,9 +76,11 @@ extension UIBuildUpViewReactor {
             .map(CheckChoiceCellReactor.init)
             .map(BuildUpSectionItem.checkChioce)
         
+        
         return [
             .questions([.question(doc.question)]),
-            .answers(choiceSectionItems)
+            .answers(choiceSectionItems),
+            .tag(.tags(doc.tags))
         ]
     }
 }

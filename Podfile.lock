@@ -488,6 +488,7 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.0)
+  - JJFloatingActionButton (2.5.0)
   - leveldb-library (1.22.1)
   - ManualLayout (1.3.0)
   - nanopb (2.30908.0):
@@ -523,8 +524,8 @@ PODS:
   - SVProgressHUD (2.2.5)
   - SwiftGen (6.5.1)
   - SwiftLint (0.45.0)
-  - SwiftRichString (3.7.2)
   - SwiftyBeaver (1.9.5)
+  - TagListView (1.4.1)
   - WeakMapTable (1.2.0)
   - XCoordinator (2.0.7):
     - XCoordinator/Core (= 2.0.7)
@@ -535,6 +536,7 @@ DEPENDENCIES:
   - Firebase/Auth
   - Firebase/Firestore
   - GoogleSignIn
+  - JJFloatingActionButton
   - ManualLayout
   - ReactorKit
   - ReusableKit
@@ -548,8 +550,8 @@ DEPENDENCIES:
   - SVProgressHUD
   - SwiftGen
   - SwiftLint
-  - SwiftRichString
   - SwiftyBeaver
+  - TagListView (~> 1.0)
   - XCoordinator (~> 2.0)
 
 SPEC REPOS:
@@ -573,6 +575,7 @@ SPEC REPOS:
     - gRPC-Core
     - GTMAppAuth
     - GTMSessionFetcher
+    - JJFloatingActionButton
     - leveldb-library
     - ManualLayout
     - nanopb
@@ -590,8 +593,8 @@ SPEC REPOS:
     - SVProgressHUD
     - SwiftGen
     - SwiftLint
-    - SwiftRichString
     - SwiftyBeaver
+    - TagListView
     - WeakMapTable
     - XCoordinator
 
@@ -615,6 +618,7 @@ SPEC CHECKSUMS:
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
+  JJFloatingActionButton: fdc3aefb0f28f04d0f988fa25d5fac97028a9ea7
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   ManualLayout: 68ac8cfa6b5f656f7a9fadec3730208b95986880
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
@@ -632,11 +636,11 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
   SwiftLint: e5c7f1fba68eccfc51509d5b2ce1699f5502e0c7
-  SwiftRichString: d61b807db1f8834c26fee92b6dd3e1be2dc5af03
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
+  TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
   WeakMapTable: 05c694ce8439a7a9ebabb56187287a63c57673d6
   XCoordinator: 9ee654fedef1ffede33d5c11677708a555c00542
 
-PODFILE CHECKSUM: eb2f8ad8ad1340784a96bef835426ae844ca1877
+PODFILE CHECKSUM: 66c46a36a94722584c334f744f2d51f0c439f32f
 
 COCOAPODS: 1.11.2

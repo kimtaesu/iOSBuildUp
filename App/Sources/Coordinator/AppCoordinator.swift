@@ -31,10 +31,11 @@ class AppCoordinator: NavigationCoordinator<AppRoute> {
     override func prepareTransition(for route: AppRoute) -> NavigationTransition {
         switch route {
         case .splash:
-            let dependency = UISplashViewController.Reactor.Dependency(authService: self.authService, router: self.unownedRouter)
-            let reactor = UISplashViewController.Reactor(dependency: dependency)
-            let splashViewController = UISplashViewController(reactor: reactor)
-            return .push(splashViewController)
+//            let dependency = UISplashViewController.Reactor.Dependency(authService: self.authService, router: self.unownedRouter)
+//            let reactor = UISplashViewController.Reactor(dependency: dependency)
+//            let splashViewController = UISplashViewController(reactor: reactor)
+//            return .push(splashViewController)
+            return .none()
         case .home:
             let mainCoordinator = MainTabCoordinator(buildUpService: self.buildUpService)
             mainCoordinator.viewController.modalPresentationStyle = .fullScreen

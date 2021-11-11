@@ -35,6 +35,8 @@ target 'App' do
   pod 'SimpleCheckbox'
   pod 'SVProgressHUD'
   pod 'XCoordinator', '~> 2.0'
+  pod 'JJFloatingActionButton'
+  pod 'TagListView', '~> 1.0'
   
   # Firebase
   pod 'Firebase/Analytics'

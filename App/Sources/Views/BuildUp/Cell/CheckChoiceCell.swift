@@ -11,7 +11,10 @@ import SimpleCheckbox
 class CheckChoiceCell: UICollectionViewCell {
     
     private struct Metrics {
-        static let margin: CGFloat = 10
+        static let left: CGFloat = 16
+        static let right: CGFloat = left
+        static let top: CGFloat = 10
+        static let bottom: CGFloat = top
         static let checkBoxLeft: CGFloat = 10
         static let checkBoxSize: CGFloat = 20
     }
@@ -49,12 +52,12 @@ class CheckChoiceCell: UICollectionViewCell {
         }
         
         self.answersLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(Metrics.margin)
+            $0.leading.equalToSuperview().inset(Metrics.left)
             $0.centerY.equalToSuperview()
         }
         
         self.circleBox.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(Metrics.margin)
+            $0.trailing.equalToSuperview().inset(Metrics.right)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(Metrics.checkBoxSize)
             $0.leading.equalTo(self.answersLabel.snp.trailing).offset(Metrics.checkBoxLeft)
@@ -78,6 +81,11 @@ class CheckChoiceCell: UICollectionViewCell {
         }
         return hitView
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.disposeBag = DisposeBag()
+    }
 }
 
 
@@ -96,10 +104,10 @@ extension CheckChoiceCell: ReactorKit.View, HasDisposeBag {
 
 extension CheckChoiceCell {
     class func size(_ width: CGFloat, _ reactor: CheckChoiceCellReactor) -> CGSize {
-        let left = Metrics.margin
-        let right = Metrics.margin
-        let top = Metrics.margin
-        let bottom = Metrics.margin
+        let left = Metrics.left
+        let right = Metrics.right
+        let top = Metrics.top
+        let bottom = Metrics.bottom
         let fitsWidth = width - (Metrics.checkBoxSize + Metrics.checkBoxLeft + left + right)
         let answersHeight = snap(reactor.currentState.answers.height(thatFitsWidth: fitsWidth, font: Font.answers, maximumNumberOfLines: 2))
         let height = top
