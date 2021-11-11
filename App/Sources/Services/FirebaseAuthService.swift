@@ -8,19 +8,29 @@
 import Foundation
 import RxSwift
 import FirebaseAuth
+import Firebase
+import GoogleSignIn
 
 class FirebaseAuthService: AuthServiceType {
-    
+
     private let authProvider = Auth.auth()
      
-    func getUserIfNeedAnonymous() -> Observable<AppUser> {
-        // TODO: Test Case Success, Failed, ifExist
-        
-        if let currentUser = authProvider.currentUser {
-            return .just(AppUser(currentUser))
+    func getUser() -> Observable<User?> {
+        return .just(self.authProvider.currentUser)
+    }
+    
+    func getUserIfNeedAnonymous() -> Observable<User> {
+        if let currentUser = self.authProvider.currentUser {
+            return .just(currentUser)
         } else {
-            return authProvider.rx.signInAnonymously()
-                .map { AppUser($0.user) }
+            return self.authProvider.rx.signInAnonymously()
+                .map { $0.user }
         }
+    }
+    
+    func linkAccount(_ credential: AuthCredential) -> Observable<User> {
+        return self.getUserIfNeedAnonymous()
+            .flatMap { $0.rx.linkAndRetrieveData(with: credential) }
+            .map { $0.user }
     }
 }

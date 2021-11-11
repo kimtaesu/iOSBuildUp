@@ -29,7 +29,7 @@ targets:
 
 
 schemes:
-  Ziccha:
+  iOSBuildUp:
     build:
       targets:
         App: all

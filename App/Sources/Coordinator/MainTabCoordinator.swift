@@ -23,8 +23,11 @@ class MainTabCoordinator: TabBarCoordinator<MainRoute> {
     private let favoriteRouter: StrongRouter<FavoriteRoute>
     private let appInfoRouter: StrongRouter<AppInfoRoute>
     
-    convenience init(buildUpService: BuildUpServiceType) {
-        let homeCoordinator = HomeCoordinator(buildUpService: buildUpService)
+    convenience init(
+        authService: AuthServiceType,
+        buildUpService: BuildUpServiceType
+    ) {
+        let homeCoordinator = HomeCoordinator(authService: authService, buildUpService: buildUpService)
         homeCoordinator.rootViewController.tabBarItem = MainTabItem.home.tabItem
 
         let searchCoordinator = SearchCoordinator()
@@ -56,7 +59,6 @@ class MainTabCoordinator: TabBarCoordinator<MainRoute> {
         self.appInfoRouter = appInfoRouter
         super.init(tabs: [homeRouter, searchRouter, favoriteRouter, appInfoRouter], select: homeRouter)
         self.rootViewController.tabBar.isTranslucent = false
-//        print("!!!!!!!!! \()")
     }
   
     override func prepareTransition(for route: MainRoute) -> TabBarTransition {

@@ -18,8 +18,13 @@ enum HomeRoute: Route {
 class HomeCoordinator: NavigationCoordinator<HomeRoute> {
   
     private let buildUpService: BuildUpServiceType
+    private let authService: AuthServiceType
     
-    init(buildUpService: BuildUpServiceType) {
+    init(
+        authService: AuthServiceType,
+        buildUpService: BuildUpServiceType
+    ) {
+        self.authService = authService
         self.buildUpService = buildUpService
         super.init(initialRoute: .buildUp)
     }
@@ -27,7 +32,7 @@ class HomeCoordinator: NavigationCoordinator<HomeRoute> {
   override func prepareTransition(for route: HomeRoute) -> NavigationTransition {
     switch route {
     case .buildUp:
-        let dependency: UIBuildUpViewReactor.Dependency = .init(buildUpService: self.buildUpService)
+        let dependency: UIBuildUpViewReactor.Dependency = .init(authService: self.authService, buildUpService: self.buildUpService)
         let reactor = UIBuildUpViewReactor(dependency: dependency)
         let viewController = UIBuildUpViewController(reactor: reactor)
         return .push(viewController)

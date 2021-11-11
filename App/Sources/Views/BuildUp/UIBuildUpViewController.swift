@@ -69,6 +69,7 @@ class UIBuildUpViewController: BaseViewController {
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = FontFamily.NotoSansCJKKR.medium.font(size: 20)
         button.fillColor = ColorName.primary.color
+
         return button
     }()
     
@@ -77,6 +78,7 @@ class UIBuildUpViewController: BaseViewController {
         button.buttonImage = Asset.floatingInfomation.image.withRenderingMode(.alwaysTemplate)
         button.buttonImageColor = .white
         button.buttonColor = ColorName.accent.color
+        button.handleSingleActionDirectly = false
         return button
     }()
     
@@ -162,15 +164,12 @@ extension UIBuildUpViewController: UICollectionViewDelegateFlowLayout {
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        let inset: UIEdgeInsets = .init(top: Metrics.margin, left: Metrics.margin, bottom: Metrics.margin, right: Metrics.margin)
-        
         switch self.dataSource[section] {
         case .questions:
-            return inset
+            return .init(top: Metrics.margin, left: Metrics.margin, bottom: Metrics.margin * 2, right: Metrics.margin)
         case .answers, .tag:
-            return inset
+            return .init(top: Metrics.margin, left: Metrics.margin, bottom: Metrics.margin, right: Metrics.margin)
         }
-        
     }
 }
 
@@ -180,16 +179,35 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
     typealias Reactor = UIBuildUpViewReactor
     
     func bind(reactor: Reactor) {
-        
-        self.floatingButton.addItem(title: "오탈자 및 문의하기", image: Asset.apple.image) { item in
+        self.floatingButton.addItem(
+            title: "오탈자 및 문의하기",
+            image: Asset.email.image
+        ) { item in
+            guard let doc = reactor.currentState.document else { return }
+            self.contactDocument(RemoteConfigStore.shared.contactEmail, doc: doc)
         }
 
-        self.floatingButton.addItem(title: "Google 로그인", image: Asset.google.image) { item in
-            
+        let googleLoginItem = JJActionItem()
+        googleLoginItem.titleLabel.text = "Google 로그인"
+        googleLoginItem.imageView.image = Asset.google.image
+        googleLoginItem.action = { [weak self] _ in
+            self?.performGoogleAccountLink()
         }
         
+        reactor.state.map { $0.isLoggined }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isLoggined in
+                guard let self = self else { return }
+                if !isLoggined {
+                    self.floatingButton.addItem(googleLoginItem)
+                } else {
+                    self.floatingButton.removeItem(googleLoginItem)
+                }
+            })
+            .disposed(by: self.disposeBag)
+            
         self.rx.viewDidLoad
-            .map { Reactor.Action.nextQuestion }
+            .map { Reactor.Action.refresh }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
@@ -204,6 +222,12 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
         
         self.collectionView.rx.setDelegate(self)
             .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.signInError }
+            .filterNil()
+            .subscribe(onNext: { [weak self] error in
+                self?.displaySignInError(error)
+            })
+            .disposed(by: self.disposeBag)
     }
 }
-

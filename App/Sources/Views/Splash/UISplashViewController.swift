@@ -54,10 +54,9 @@ extension UISplashViewController: ReactorKit.View, HasDisposeBag {
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
-        reactor.state.map { $0.user }
+        reactor.state.map { $0.isNextScreen }
             .distinctUntilChanged()
-            .debug("getUsers")
-            .filterNil()
+            .filter { $0 }
             .take(1)
             .subscribe(onNext: { [weak self] _ in
                 self?.onNext()

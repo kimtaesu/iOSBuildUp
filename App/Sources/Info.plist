@@ -20,6 +20,14 @@
 				<string>com.googleusercontent.apps.784458720550-i38lvkpoi78umgfmjt60flg7pachse3b</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mailto</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(LONG_BUNDLE_VERSION)</string>

@@ -41,7 +41,13 @@ class TagCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.tagListView.removeAllTags()
+    }
+    
     func configCell(tags: [Tag]) {
+        self.tagListView.removeAllTags()
         self.tagListView.addTags(tags.map { $0.title })
     }
 }

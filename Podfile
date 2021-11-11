@@ -17,10 +17,10 @@ target 'App' do
   pod 'ReactorKit'
   pod 'RxViewController'
   pod 'RxDataSources'
+  pod "RxGesture"
   
   pod 'SwiftGen'
   pod 'SwiftLint'
-  
   
   # Sns
   pod 'GoogleSignIn'
@@ -37,11 +37,13 @@ target 'App' do
   pod 'XCoordinator', '~> 2.0'
   pod 'JJFloatingActionButton'
   pod 'TagListView', '~> 1.0'
+  pod 'Toaster'
   
   # Firebase
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'
   pod 'Firebase/Firestore'
+  pod 'Firebase/RemoteConfig'
 
   
   post_install do |installer|

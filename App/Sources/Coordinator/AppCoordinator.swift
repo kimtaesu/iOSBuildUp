@@ -37,9 +37,10 @@ class AppCoordinator: NavigationCoordinator<AppRoute> {
 //            return .push(splashViewController)
             return .none()
         case .home:
-            let mainCoordinator = MainTabCoordinator(buildUpService: self.buildUpService)
-            mainCoordinator.viewController.modalPresentationStyle = .fullScreen
-            return .present(mainCoordinator.strongRouter, animation: .fade)
+//            let mainCoordinator = MainTabCoordinator(buildUpService: self.buildUpService)
+//            mainCoordinator.viewController.modalPresentationStyle = .fullScreen
+//            return .present(mainCoordinator.strongRouter, animation: .fade)
+            return .none()
         }
     }
 }

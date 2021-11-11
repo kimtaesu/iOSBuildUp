@@ -12,8 +12,11 @@ final class CheckChoiceCellReactor: Reactor {
     let initialState: State
     
     enum Action {
+        case setChecked(Bool)
+        case touchCell
     }
     enum Mutation {
+        case setChecked(Bool)
     }
     
     struct State {
@@ -29,9 +32,20 @@ final class CheckChoiceCellReactor: Reactor {
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
-        return .empty()
+        switch action {
+        case .touchCell:
+            return .just(Mutation.setChecked(!self.currentState.isChecked))
+        case .setChecked(let isChecked):
+            return .just(Mutation.setChecked(isChecked))
+        }
     }
+    
     func reduce(state: State, mutation: Mutation) -> State {
+        var state = state
+        switch mutation {
+        case .setChecked(let isChecked):
+            state.isChecked = isChecked
+        }
         return state
     }
 }

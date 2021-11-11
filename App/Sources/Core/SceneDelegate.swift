@@ -12,19 +12,12 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import ManualLayout
+import RxGesture
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
-    
-     
-    private let authService: AuthServiceType = FirebaseAuthService()
-    
-    private let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
-    
-    private lazy var appCoordinator: AppCoordinator = {
-        return AppCoordinator(authService: self.authService, buildUpService: self.buildUpService)
-    }()
 
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -32,23 +25,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        self.window = window
+        window.overrideUserInterfaceStyle = .light
+        window.backgroundColor = .white
         
+        let authService: AuthServiceType = FirebaseAuthService()
         
-        let splashReactor = UISplashViewReactor(authService: self.authService)
+        let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
+        
+        let splashReactor = UISplashViewReactor(authService: authService)
         let splashViewController = UISplashViewController(reactor: splashReactor, onNext: {
-            let dependency = UIBuildUpViewReactor.Dependency.init(buildUpService: self.buildUpService)
+            let dependency = UIBuildUpViewReactor.Dependency.init(authService: authService, buildUpService: buildUpService)
             let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
-            let viewController = UIBuildUpViewController(reactor: reactor)
+            let viewController = UINavigationController(rootViewController: UIBuildUpViewController(reactor: reactor))
             window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
         window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white
-        
-//        self.appCoordinator.setRoot(for: window)
+        self.window = window
     }
-
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

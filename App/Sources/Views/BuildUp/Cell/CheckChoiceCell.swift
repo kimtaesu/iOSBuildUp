@@ -35,9 +35,10 @@ class CheckChoiceCell: UICollectionViewCell {
         circleBox.borderStyle = .circle
         circleBox.checkmarkStyle = .circle
         circleBox.borderLineWidth = 1
-        circleBox.uncheckedBorderColor = .lightGray
+        circleBox.uncheckedBorderColor = .black
         circleBox.checkedBorderColor = ColorName.accent.color
         circleBox.checkmarkColor = ColorName.accent.color
+        circleBox.isUserInteractionEnabled = false
         circleBox.checkmarkSize = 0.6
         return circleBox
     }()
@@ -73,28 +74,30 @@ class CheckChoiceCell: UICollectionViewCell {
         self.layer.cornerRadius = floor(self.height / 4)
     }
     
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let hitView = super.hitTest(point, with: event)
-        
-        if hitView == self.contentView {
-            return self.circleBox
-        }
-        return hitView
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.disposeBag = DisposeBag()
     }
 }
 
-
+import RxGesture
 import ReactorKit
 
 extension CheckChoiceCell: ReactorKit.View, HasDisposeBag {
     typealias Reactor = CheckChoiceCellReactor
     
     func bind(reactor: Reactor) {
+        
+        self.rx.tapGestureEnded()
+            .map { _ in Reactor.Action.touchCell }
+            .bind(to: reactor.action)
+            .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.isChecked }
+            .distinctUntilChanged()
+            .bind(to: self.circleBox.rx.isChecked)
+            .disposed(by: self.disposeBag)
+        
         reactor.state.map { $0.answers }
             .distinctUntilChanged()
             .bind(to: self.answersLabel.rx.text)
@@ -116,4 +119,3 @@ extension CheckChoiceCell {
         return .init(width: width, height: height)
     }
 }
-

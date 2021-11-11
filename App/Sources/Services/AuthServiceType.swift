@@ -7,8 +7,10 @@
 
 import Foundation
 import RxSwift
+import FirebaseAuth
 
 protocol AuthServiceType: AnyObject {
-    func getUserIfNeedAnonymous() -> Observable<AppUser>
+    func getUser() -> Observable<User?>
+    func getUserIfNeedAnonymous() -> Observable<User>
+    func linkAccount(_ credential: AuthCredential) -> Observable<User>
 }
-

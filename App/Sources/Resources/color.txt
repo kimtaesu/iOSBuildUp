@@ -1,6 +1,6 @@
 
-Primary: #1EB980
-Accent: #EA4C89
+Primary: #0F893D
+Accent: #D03538
 888: #888888
 
 
