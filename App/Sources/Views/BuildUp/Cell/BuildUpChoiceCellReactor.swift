@@ -7,7 +7,7 @@
 
 import ReactorKit
 
-final class CheckChoiceCellReactor: Reactor {
+final class BuildUpChoiceCellReactor: Reactor {
     
     let initialState: State
     

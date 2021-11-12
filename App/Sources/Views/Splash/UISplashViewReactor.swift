@@ -5,6 +5,7 @@
 //  Created by tyler on 2021/11/08.
 //
 
+#if NO_USED
 import ReactorKit
 import FirebaseAuth
 import XCoordinator
@@ -17,13 +18,13 @@ final class UISplashViewReactor: Reactor {
         case getUser
     }
     enum Mutation {
-        case setUser(User)
+        case setUser(AuthDataResult)
         case setError(Error)
     }
     
     struct State {
         var error: Error?
-        var user: User?
+        var user: AuthDataResult?
         var isNextScreen: Bool = false
     }
     
@@ -64,4 +65,4 @@ final class UISplashViewReactor: Reactor {
         return state
     }
 }
-
+#endif

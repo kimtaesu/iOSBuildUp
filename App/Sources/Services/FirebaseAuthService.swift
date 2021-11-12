@@ -12,25 +12,19 @@ import Firebase
 import GoogleSignIn
 
 class FirebaseAuthService: AuthServiceType {
+ 
 
     private let authProvider = Auth.auth()
-     
-    func getUser() -> Observable<User?> {
-        return .just(self.authProvider.currentUser)
+    
+    func signIn(_ credential: AuthCredential) -> Observable<AuthDataResult> {
+        self.authProvider.rx.signInAndRetrieveData(with: credential)
     }
     
-    func getUserIfNeedAnonymous() -> Observable<User> {
-        if let currentUser = self.authProvider.currentUser {
-            return .just(currentUser)
-        } else {
-            return self.authProvider.rx.signInAnonymously()
-                .map { $0.user }
+    func signOut() -> Observable<Void> {
+        let authProvider = self.authProvider
+        return Observable.deferred {
+            try authProvider.signOut()
+            return .just(())
         }
-    }
-    
-    func linkAccount(_ credential: AuthCredential) -> Observable<User> {
-        return self.getUserIfNeedAnonymous()
-            .flatMap { $0.rx.linkAndRetrieveData(with: credential) }
-            .map { $0.user }
     }
 }

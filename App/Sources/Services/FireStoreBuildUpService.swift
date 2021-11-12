@@ -29,7 +29,8 @@ final class FireStoreBuildUpService: BuildUpServiceType {
             tags: [
                 .init(id: "A", title: "RxSwift"),
                 .init(id: "B", title: "Swift"),
-            ]
+            ],
+            likes: .init(isThumbUp: true, thumbUpCount: 10, isLike: false)
         )
         return .just(res)
     }

@@ -8,7 +8,7 @@
 import UIKit
 import SimpleCheckbox
 
-class CheckChoiceCell: UICollectionViewCell {
+class BuildUpChoiceCell: UICollectionViewCell {
     
     private struct Metrics {
         static let left: CGFloat = 16
@@ -83,8 +83,8 @@ class CheckChoiceCell: UICollectionViewCell {
 import RxGesture
 import ReactorKit
 
-extension CheckChoiceCell: ReactorKit.View, HasDisposeBag {
-    typealias Reactor = CheckChoiceCellReactor
+extension BuildUpChoiceCell: ReactorKit.View, HasDisposeBag {
+    typealias Reactor = BuildUpChoiceCellReactor
     
     func bind(reactor: Reactor) {
         
@@ -105,8 +105,8 @@ extension CheckChoiceCell: ReactorKit.View, HasDisposeBag {
     }
 }
 
-extension CheckChoiceCell {
-    class func size(_ width: CGFloat, _ reactor: CheckChoiceCellReactor) -> CGSize {
+extension BuildUpChoiceCell {
+    class func size(_ width: CGFloat, _ reactor: BuildUpChoiceCellReactor) -> CGSize {
         let left = Metrics.left
         let right = Metrics.right
         let top = Metrics.top

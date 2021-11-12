@@ -18,11 +18,10 @@ class UISplashViewController: UIViewController {
     }()
     
     private let onNext: () -> Void
+    
     init(
-        reactor: Reactor,
         onNext: @escaping () -> Void
     ) {
-        defer { self.reactor = reactor }
         self.onNext = onNext
         super.init(nibName: nil, bundle: nil)
     }
@@ -40,9 +39,13 @@ class UISplashViewController: UIViewController {
             $0.width.equalTo(120)
             $0.height.equalTo(self.launchImageView.snp.width)
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.onNext()
+        }
     }
 }
 
+#if NO_USED
 import ReactorKit
 
 extension UISplashViewController: ReactorKit.View, HasDisposeBag {
@@ -64,3 +67,4 @@ extension UISplashViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
     }
 }
+#endif

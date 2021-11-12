@@ -10,5 +10,6 @@ import Foundation
 struct QuestionDocument: Equatable {
     let question: AttributeQuestion
     let chioces: [CheckChoice]
-    let tags: [Tag]
+    let tags: [DocumentTag]
+    let likes: DocumentLike
 }

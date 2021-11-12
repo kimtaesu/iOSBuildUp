@@ -10,6 +10,7 @@ import RxDataSources
 enum BuildUpSection {
     case questions([BuildUpSection.Item])
     case answers([BuildUpSection.Item])
+    case like(BuildUpSection.Item)
     case tag(BuildUpSection.Item)
 }
 
@@ -18,6 +19,8 @@ extension BuildUpSection: SectionModelType {
 
     var items: [Item] {
       switch self {
+      case .like(let item):
+          return [item]
       case .tag(let item):
           return [item]
       case .answers(let items):
@@ -28,6 +31,8 @@ extension BuildUpSection: SectionModelType {
     }
     public init(original: BuildUpSection, items: [Item]) {
         switch original {
+        case .like(let item):
+            self = .like(item)
         case .tag(let item):
             self = .tag(item)
         case .answers(let items):
@@ -40,6 +45,7 @@ extension BuildUpSection: SectionModelType {
 
 enum BuildUpSectionItem {
     case question(AttributeQuestion)
-    case tags([Tag])
-    case checkChioce(CheckChoiceCellReactor)
+    case tags([DocumentTag])
+    case like(BuildUpLikeCellReactor)
+    case checkChioce(BuildUpChoiceCellReactor)
 }

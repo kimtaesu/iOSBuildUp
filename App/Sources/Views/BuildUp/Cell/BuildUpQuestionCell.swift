@@ -8,12 +8,10 @@
 import UIKit
 
 
-class AttributeQuestionCell: UICollectionViewCell {
+class BuildUpQuestionCell: UICollectionViewCell {
     
     private struct Metrics {
         static let margin: CGFloat = 10
-        static let checkBoxLeft: CGFloat = 10
-        static let checkBoxSize: CGFloat = 20
     }
     
     private struct Font {
@@ -48,7 +46,7 @@ class AttributeQuestionCell: UICollectionViewCell {
     }
 }
 
-extension AttributeQuestionCell {
+extension BuildUpQuestionCell {
     class func size(_ width: CGFloat, _ viewHeight: CGFloat, question: AttributeQuestion) -> CGSize {
         let height = snap(question.question.height(thatFitsWidth: width, font: Font.question, maximumNumberOfLines: 0))
         return .init(width: width, height: height)

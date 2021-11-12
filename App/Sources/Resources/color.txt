@@ -7,3 +7,5 @@ Accent: #D03538
 AppMenuHeaderBG: #F6F6F6
 AppMenuHeaderTitle: #9C9C9C
 AppMenuActionMenuBG: #F2F2F2
+
+AuthProviderSelectedBG: #b3cffc

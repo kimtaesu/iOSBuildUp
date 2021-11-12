@@ -38,6 +38,8 @@ target 'App' do
   pod 'JJFloatingActionButton'
   pod 'TagListView', '~> 1.0'
   pod 'Toaster'
+  pod 'Kingfisher'
+  pod 'DropDown'
   
   # Firebase
   pod 'Firebase/Analytics'

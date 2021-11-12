@@ -13,6 +13,7 @@ import RxSwift
 import RxCocoa
 import ManualLayout
 import RxGesture
+import Kingfisher
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -32,8 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
         
-        let splashReactor = UISplashViewReactor(authService: authService)
-        let splashViewController = UISplashViewController(reactor: splashReactor, onNext: {
+        let splashViewController = UISplashViewController(onNext: {
             let dependency = UIBuildUpViewReactor.Dependency.init(authService: authService, buildUpService: buildUpService)
             let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
             let viewController = UINavigationController(rootViewController: UIBuildUpViewController(reactor: reactor))

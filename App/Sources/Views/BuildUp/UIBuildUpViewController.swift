@@ -13,13 +13,15 @@ import FirebaseAuth
 import ReusableKit
 import RxDataSources
 import JJFloatingActionButton
+import DropDown
 
 class UIBuildUpViewController: BaseViewController {
     
     private struct Reusable {
-        static let question = ReusableCell<AttributeQuestionCell>()
-        static let checkChioce = ReusableCell<CheckChoiceCell>()
-        static let tag = ReusableCell<TagCollectionViewCell>()
+        static let question = ReusableCell<BuildUpQuestionCell>()
+        static let checkChioce = ReusableCell<BuildUpChoiceCell>()
+        static let like = ReusableCell<BuildUpLikeCell>()
+        static let tag = ReusableCell<BuildUpTagCell>()
     }
 
     private struct Metrics {
@@ -37,6 +39,10 @@ class UIBuildUpViewController: BaseViewController {
             let cell = collectionView.dequeue(Reusable.checkChioce, for: indexPath)
             cell.reactor = reactor
             return cell
+        case .like(let reactor):
+            let cell = collectionView.dequeue(Reusable.like, for: indexPath)
+            cell.reactor = reactor
+            return cell
         case .tags(let tags):
             let cell = collectionView.dequeue(Reusable.tag, for: indexPath)
             cell.configCell(tags: tags)
@@ -44,12 +50,15 @@ class UIBuildUpViewController: BaseViewController {
         }
     })
     
-    let favoriteBarButtonItem = UIBarButtonItem(
-        image: Asset.starBorder.image.withRenderingMode(.alwaysOriginal),
-        style: .plain,
-        target: nil,
-        action: nil
-    )
+    let dropDown: DropDown = {
+        let dropDown = DropDown()
+        return dropDown
+    }()
+    
+    private let userProfileView: UIUserProfileView = {
+        let button = UIUserProfileView(frame: .init(x: 0, y: 0, width: 36, height: 36))
+        return button
+    }()
     
     private let collectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -60,6 +69,7 @@ class UIBuildUpViewController: BaseViewController {
         collectionView.register(Reusable.checkChioce)
         collectionView.register(Reusable.question)
         collectionView.register(Reusable.tag)
+        collectionView.register(Reusable.like)
         return collectionView
     }()
     
@@ -101,6 +111,9 @@ class UIBuildUpViewController: BaseViewController {
         self.nextButton.layer.shadowColor = UIColor.black.cgColor
         
         self.collectionView.contentInset.bottom = Metrics.floatingHeight + self.view.safeAreaInsets.bottom + 16
+        self.collectionView.contentInset.left = Metrics.margin
+        self.collectionView.contentInset.right = Metrics.margin
+        self.collectionView.contentInset.top = Metrics.margin
      }
     
     override func setupConstraints() {
@@ -123,13 +136,8 @@ class UIBuildUpViewController: BaseViewController {
     }
     
     override func setupNavigationBarItems() {
-        self.navigationItem.leftBarButtonItems = [
-            .init(image: Asset.arrowBack.image.withRenderingMode(.alwaysOriginal), style: .plain, target: self, action: #selector(self.back))
-        ]
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self.userProfileView)
         
-        self.navigationItem.rightBarButtonItems = [
-            self.favoriteBarButtonItem
-        ]
     }
     
     @objc func back() {
@@ -144,6 +152,8 @@ extension UIBuildUpViewController: UICollectionViewDelegateFlowLayout {
         let sectionHeight = collectionView.sectionHeight(at: indexPath.section)
         
         switch self.dataSource[indexPath] {
+        case .like:
+            return Reusable.like.class.size(sectionWidth)
         case .question(let q):
             return Reusable.question.class.size(sectionWidth, sectionHeight, question: q)
         case .checkChioce(let reactor):
@@ -158,17 +168,23 @@ extension UIBuildUpViewController: UICollectionViewDelegateFlowLayout {
         case .answers:
             return 8
             
-        case .questions, .tag:
+        case .questions, .tag, .like:
             return 0
         }
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
+        var inset: UIEdgeInsets = .zero
+        
         switch self.dataSource[section] {
         case .questions:
-            return .init(top: Metrics.margin, left: Metrics.margin, bottom: Metrics.margin * 2, right: Metrics.margin)
+            inset.bottom = Metrics.margin * 2
+            return inset
         case .answers, .tag:
-            return .init(top: Metrics.margin, left: Metrics.margin, bottom: Metrics.margin, right: Metrics.margin)
+            inset.bottom = Metrics.margin
+            return inset
+        case .like:
+            return inset
         }
     }
 }
@@ -229,5 +245,42 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
                 self?.displaySignInError(error)
             })
             .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.userPhotoURL }
+            .filterNil()
+            .subscribe(onNext: { [weak self] url in
+                guard let self = self else { return }
+                self.userProfileView.setImage(url: url)
+            })
+            .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.authProvider }
+            .filterNil()
+            .map { $0.icon }
+            .subscribe(onNext: { [weak self] image in
+                self?.userProfileView.providerImage = image
+            })
+            .disposed(by: self.disposeBag)
+
+        
+        
+        self.userProfileView.rx.tapGestureEnded()
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.showSignProviderDropDown(
+                    anchorView: self.userProfileView,
+                    dataSources: [AuthProvider.google],
+                    didSelected: { [weak self] provider in
+                        guard let self = self else { return }
+                        guard let provider = provider else { return }
+                        switch provider {
+                        case .google:
+                            self.performGoogleAccountLink()
+                        }
+                    }
+                )
+            })
+            .disposed(by: self.disposeBag)
     }
 }
+

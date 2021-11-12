@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tag: Equatable {
+struct DocumentTag: Equatable {
     let id: String
     let title: String
 }

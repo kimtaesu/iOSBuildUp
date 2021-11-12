@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import TagListView
 
-class TagCollectionViewCell: UICollectionViewCell {
+class BuildUpTagCell: UICollectionViewCell {
     
     private struct Font {
         static let tag: UIFont = FontFamily.NotoSansCJKKR.regular.font(size: 14)
@@ -46,14 +46,14 @@ class TagCollectionViewCell: UICollectionViewCell {
         self.tagListView.removeAllTags()
     }
     
-    func configCell(tags: [Tag]) {
+    func configCell(tags: [DocumentTag]) {
         self.tagListView.removeAllTags()
         self.tagListView.addTags(tags.map { $0.title })
     }
 }
 
-extension TagCollectionViewCell {
-    class func size(_ width: CGFloat, tags: [Tag]) -> CGSize {
+extension BuildUpTagCell {
+    class func size(_ width: CGFloat, tags: [DocumentTag]) -> CGSize {
         return .init(width: width, height: 80)
     }
 }

@@ -19,14 +19,14 @@ final class UIBuildUpViewReactor: Reactor {
     
     enum Action {
         case refresh
-        case linkAccount(AuthCredential)
+        case signIn(AuthCredential)
         case tapNext
     }
     
     enum Mutation {
         case setLoading(Bool)
         case setDocument(QuestionDocument)
-        case setUser(User)
+        case setAuthData(AuthDataResult)
         case setSignInError(Error)
     }
     
@@ -39,11 +39,19 @@ final class UIBuildUpViewReactor: Reactor {
         
         var selectedAnswers: [CheckChoice] = []
         
-        var user: User?
+        var authDataResult: AuthDataResult?
         var sections: [BuildUpSection] = []
         
+        var userPhotoURL: URL? {
+            logger.debug("user photo url: \(String(describing: self.authDataResult?.user.photoURL))")
+            return self.authDataResult?.user.photoURL
+        }
+        var authProvider: AuthProvider? {
+            return AuthProvider.create(provider: self.authDataResult?.credential?.provider)
+        }
+        
         var isLoggined: Bool {
-            return self.user != nil && self.user?.isAnonymous == false
+            return self.authDataResult != nil && self.authDataResult?.user.isAnonymous == false
         }
     }
     
@@ -58,9 +66,9 @@ final class UIBuildUpViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .linkAccount(let credential):
-            return self.authService.linkAccount(credential)
-                .map(Mutation.setUser)
+        case .signIn(let credential):
+            return self.authService.signIn(credential)
+                .map(Mutation.setAuthData)
                 .catch { .just(.setSignInError($0))}
             
         case .tapNext:
@@ -73,10 +81,7 @@ final class UIBuildUpViewReactor: Reactor {
                 .map(Mutation.setDocument)
             let endLoading: Observable<Mutation> = .just(.setLoading(false))
             
-            let getUser: Observable<Mutation> = self.authService.getUserIfNeedAnonymous()
-                .map(Mutation.setUser)
-            
-            return Observable.concat(startLoading, getUser, nextQuestion, endLoading)
+            return Observable.concat(startLoading, nextQuestion, endLoading)
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
@@ -86,8 +91,8 @@ final class UIBuildUpViewReactor: Reactor {
         switch mutation {
         case .setSignInError(let error):
             state.signInError = error
-        case .setUser(let user):
-            state.user = user
+        case .setAuthData(let data):
+            state.authDataResult = data
         case .setLoading(let isLoading):
             state.isLoading = isLoading
         case .setDocument(let document):
@@ -102,13 +107,15 @@ extension UIBuildUpViewReactor {
     func makeSections(doc: QuestionDocument) -> [BuildUpSection] {
         
         let choiceSectionItems = doc.chioces
-            .map(CheckChoiceCellReactor.init)
+            .map(BuildUpChoiceCellReactor.init)
             .map(BuildUpSectionItem.checkChioce)
+        
         
         return [
             .questions([.question(doc.question)]),
+//            .like(.like(.init(doc.likes))),
             .tag(.tags(doc.tags)),
-            .answers(choiceSectionItems),
+            .answers(choiceSectionItems)
         ]
     }
 }

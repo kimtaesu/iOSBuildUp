@@ -33,6 +33,9 @@ public struct ColorName {
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#9c9c9c"></span>
   /// Alpha: 100% <br/> (0x9c9c9cff)
   public static let appMenuHeaderTitle = ColorName(rgbaValue: 0x9c9c9cff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#b3cffc"></span>
+  /// Alpha: 100% <br/> (0xb3cffcff)
+  public static let authProviderSelectedBG = ColorName(rgbaValue: 0xb3cffcff)
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#0f893d"></span>
   /// Alpha: 100% <br/> (0x0f893dff)
   public static let primary = ColorName(rgbaValue: 0x0f893dff)
