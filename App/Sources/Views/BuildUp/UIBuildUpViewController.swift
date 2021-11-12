@@ -203,25 +203,6 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             self.contactDocument(RemoteConfigStore.shared.contactEmail, doc: doc)
         }
 
-        let googleLoginItem = JJActionItem()
-        googleLoginItem.titleLabel.text = "Google 로그인"
-        googleLoginItem.imageView.image = Asset.google.image
-        googleLoginItem.action = { [weak self] _ in
-            self?.performGoogleAccountLink()
-        }
-        
-        reactor.state.map { $0.isLoggined }
-            .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] isLoggined in
-                guard let self = self else { return }
-                if !isLoggined {
-                    self.floatingButton.addItem(googleLoginItem)
-                } else {
-                    self.floatingButton.removeItem(googleLoginItem)
-                }
-            })
-            .disposed(by: self.disposeBag)
-            
         self.rx.viewDidLoad
             .map { Reactor.Action.refresh }
             .bind(to: reactor.action)
@@ -247,7 +228,6 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.userPhotoURL }
-            .filterNil()
             .subscribe(onNext: { [weak self] url in
                 guard let self = self else { return }
                 self.userProfileView.setImage(url: url)
@@ -255,27 +235,33 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.authProvider }
-            .filterNil()
-            .map { $0.icon }
-            .subscribe(onNext: { [weak self] image in
-                self?.userProfileView.providerImage = image
+            .subscribe(onNext: { [weak self] authProvider in
+                self?.userProfileView.providerImage = authProvider?.icon
             })
             .disposed(by: self.disposeBag)
 
         
         
+        
         self.userProfileView.rx.tapGestureEnded()
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                
+                
+                let dataSource: [AuthDropDownItem] = reactor.currentState.isLoggined == true ? AuthDropDownItem.signOutItems : AuthDropDownItem.signInItems
                 self.showSignProviderDropDown(
                     anchorView: self.userProfileView,
-                    dataSources: [AuthProvider.google],
+                    dataSources: dataSource,
                     didSelected: { [weak self] provider in
                         guard let self = self else { return }
                         guard let provider = provider else { return }
                         switch provider {
                         case .google:
-                            self.performGoogleAccountLink()
+                            self.performGoogleAccountLink(authSignin: { credential in
+                                reactor.action.onNext(.signIn(credential))
+                            })
+                        case .logout:
+                            reactor.action.onNext(.signOut)
                         }
                     }
                 )

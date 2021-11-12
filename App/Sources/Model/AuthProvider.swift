@@ -12,10 +12,6 @@ enum AuthProvider: String, CaseIterable {
 }
 
 extension AuthProvider {
-    static func create(title: String) -> AuthProvider? {
-        return Self.allCases.first { $0.title == title }
-    }
-    
     static func create(provider: String?) -> AuthProvider? {
         guard let provider = provider,
               provider.isNotEmpty else { return nil} 

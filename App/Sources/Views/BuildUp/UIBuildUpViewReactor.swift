@@ -20,13 +20,14 @@ final class UIBuildUpViewReactor: Reactor {
     enum Action {
         case refresh
         case signIn(AuthCredential)
+        case signOut
         case tapNext
     }
     
     enum Mutation {
         case setLoading(Bool)
         case setDocument(QuestionDocument)
-        case setAuthData(AuthDataResult)
+        case setAuthData(AuthDataResult?)
         case setSignInError(Error)
     }
     
@@ -66,6 +67,11 @@ final class UIBuildUpViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .signOut:
+            return self.authService.signOut()
+                .map { Mutation.setAuthData(nil) }
+                .catch { .just(.setSignInError($0))}
+            
         case .signIn(let credential):
             return self.authService.signIn(credential)
                 .map(Mutation.setAuthData)

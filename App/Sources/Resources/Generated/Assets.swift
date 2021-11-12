@@ -36,6 +36,7 @@ public enum Asset {
   public static let google = ImageAsset(name: "google")
   public static let joinIcon = ImageAsset(name: "join_icon")
   public static let launchTetris = ImageAsset(name: "launch_tetris")
+  public static let logout = ImageAsset(name: "logout")
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
 

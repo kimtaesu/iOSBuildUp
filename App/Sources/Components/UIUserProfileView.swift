@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 class UIUserProfileView: UIControl {
     
     override var isHighlighted: Bool {
@@ -81,7 +80,7 @@ class UIUserProfileView: UIControl {
         self.providerBadgeImageView.bottom = self.bounds.bottom + (midX / 2)
     }
     
-    func setImage(url: URL) {
+    func setImage(url: URL?) {
         self.profileImageView.kf.setImage(with: url, placeholder: self.placeHolderImage)
     }
 }

@@ -9,32 +9,8 @@ import GoogleSignIn
 import Firebase
 import UIKit
 
-extension UIBuildUpViewController {
-    
-    public func showSignProviderDropDown(
-        anchorView: UIView,
-        dataSources: [AuthProvider],
-        didSelected: @escaping (AuthProvider?) -> Void
-    ) {
-        self.setUpSignInDropDownApprearance()
 
-        self.dropDown.cellNib = UINib(nibName: "MyCell", bundle: nil)
-        self.dropDown.customCellConfiguration = { index, item, cell -> Void in
-            guard let cell = cell as? MyCell else { return }
-            cell.logoImageView.image = AuthProvider.create(title: item)?.icon
-        }
-        
-        self.dropDown.dataSource = dataSources.map { $0.title }
-        self.dropDown.anchorView = anchorView
-        self.dropDown.bottomOffset = .init(x: 0, y: anchorView.height)
-        self.dropDown.show()
-        self.dropDown.selectionAction = { index, item in
-            let selected = AuthProvider.create(title: item)
-            didSelected(selected)
-            logger.debug("did selected: \(String(describing: selected))")
-        }
-    }
-    
+extension UIBuildUpViewController {
     public func displaySignInError(_ error: Error?, from function: StaticString = #function) {
         guard let error = error else { return }
         print("ⓧ Error in \(function): \(error.localizedDescription)")
@@ -48,7 +24,7 @@ extension UIBuildUpViewController {
         present(errorAlertController, animated: true, completion: nil)
     }
     
-    public func performGoogleAccountLink() {
+    public func performGoogleAccountLink(authSignin: @escaping (AuthCredential) -> Void) {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
 
         // Create Google Sign In configuration object.
@@ -75,7 +51,7 @@ extension UIBuildUpViewController {
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
                                                        accessToken: authentication.accessToken)
-            self.reactor?.action.onNext(.signIn(credential))
+            authSignin(credential)
       }
     }
 }

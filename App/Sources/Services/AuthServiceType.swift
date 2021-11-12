@@ -11,4 +11,5 @@ import FirebaseAuth
 
 protocol AuthServiceType: AnyObject {
     func signIn(_ credential: AuthCredential) -> Observable<AuthDataResult>
+    func signOut() -> Observable<Void>
 }
