@@ -29,10 +29,10 @@ extension UIBuildUpViewController {
 
 extension QuestionDocument {
     var asSubjectMail: String {
-        "\(self.question.id) 오탈자 및 문의드립니다."
+        "\(self.docId) 오탈자 및 문의드립니다."
     }
     
     var asBodyMail: String {
-        "안녕하세요! \(self.question.id) \(self.question.question) 오탈자 및 문의드립니다."
+        "안녕하세요! \(self.docId) \(self.question.question) 오탈자 및 문의드립니다."
     }
 }

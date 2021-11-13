@@ -8,8 +8,17 @@
 import Foundation
 
 struct QuestionDocument: Equatable {
+    let docId: String
     let question: AttributeQuestion
     let chioces: [CheckChoice]
     let tags: [DocumentTag]
-    let likes: DocumentLike
+}
+
+extension QuestionDocument {
+    init(document: [String: Any]) {
+        docId = ""
+        question = .init(question: "")
+        chioces = []
+        tags = []
+    }
 }

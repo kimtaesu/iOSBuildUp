@@ -9,18 +9,25 @@ import Foundation
 import RxSwift
 import FirebaseAuth
 import Firebase
+import FirebaseFirestore
 
 class FirebaseAuthService: AuthServiceType {
 
     private let authProvider = Auth.auth()
 
-    func getUser() -> Observable<User?> {
-        return .just(self.authProvider.currentUser)
+    func getUserIfNeedAnonymously() -> Observable<User> {
+        if let currentUser = authProvider.currentUser {
+            return .just(currentUser)
+        } else {
+            return self.authProvider.rx.signInAnonymously()
+                .map { $0.user }
+        }
     }
     
     func signIn(_ credential: AuthCredential) -> Observable<User> {
-        self.authProvider.rx.signInAndRetrieveData(with: credential)
+        return self.authProvider.rx.signInAndRetrieveData(with: credential)
             .map { $0.user }
+        
     }
     
     func signOut() -> Observable<Void> {

@@ -10,6 +10,7 @@ import RxSwift
 
 
 protocol BuildUpServiceType: AnyObject {
+    func answer() -> Observable<Void>
     func nextQuestion() -> Observable<QuestionDocument>
 }
 

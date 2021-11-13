@@ -13,6 +13,7 @@ final class UIBuildUpViewReactor: Reactor {
     struct Dependency {
         let authService: AuthServiceType
         let buildUpService: BuildUpServiceType
+        let firestoreRepository: FirestoreRepository
     }
     
     let initialState: State
@@ -32,6 +33,7 @@ final class UIBuildUpViewReactor: Reactor {
         case setUser(User?)
         case setSignInError(Error)
         case setChoiceSelected(CheckChoice)
+        case setNext(Bool)
     }
     
     struct State {
@@ -41,14 +43,17 @@ final class UIBuildUpViewReactor: Reactor {
         
         var selectedChoice: CheckChoice?
         
+        var isNext: Bool = false
         var user: User?
         var sections: [BuildUpSection] = []
     }
     
     private let authService: AuthServiceType
     private let buildUpService: BuildUpServiceType
+    private let firestoreRepository: FirestoreRepository
     
     init(dependency: Dependency) {
+        self.firestoreRepository = dependency.firestoreRepository
         self.authService = dependency.authService
         self.buildUpService = dependency.buildUpService
         self.initialState = State()
@@ -57,7 +62,7 @@ final class UIBuildUpViewReactor: Reactor {
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let fromCheckCoiceEvent: Observable<Mutation> = CheckChoice.event
             .filter { [weak self] event in
-                let currentDocId = self?.currentState.document?.question.id
+                let currentDocId = self?.currentState.document?.docId
                 switch event {
                 case let .setChecked(docId, _):
                     return currentDocId == docId
@@ -81,10 +86,8 @@ final class UIBuildUpViewReactor: Reactor {
             let nextQuestion: Observable<Mutation> = self.buildUpService.nextQuestion()
                 .map(Mutation.setDocument)
             let endLoading: Observable<Mutation> = .just(.setLoading(false))
-            
-            let serUser: Observable<Mutation> = self.authService.getUser()
-                .map(Mutation.setUser)
-            return Observable.concat(startLoading, serUser, nextQuestion, endLoading)
+
+            return Observable.concat(startLoading, nextQuestion, endLoading)
         case .viewWillAppear:
             return self.authService.stateDidChange()
                 .map(Mutation.setUser)
@@ -94,17 +97,21 @@ final class UIBuildUpViewReactor: Reactor {
                 .catch { .just(.setSignInError($0))}
             
         case .signIn(let credential):
-            return self.authService.signIn(credential)
+            return self.firestoreRepository.signIn(credential)
                 .map(Mutation.setUser)
                 .catch { .just(.setSignInError($0))}
             
         case .tapNext:
-            return .empty()
+            guard let docId = self.currentState.document?.docId else { return .empty() }
+            guard let selectedChoice = self.currentState.selectedChoice else { return .empty() }
+            return self.firestoreRepository.answer(docId: docId, choice: selectedChoice)
+                .map { _ in Mutation.setNext(true) }
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
         state.signInError = nil
+        state.isNext = false
         
         switch mutation {
         case .setChoiceSelected(let selected):
@@ -118,6 +125,8 @@ final class UIBuildUpViewReactor: Reactor {
         case .setDocument(let document):
             state.document = document
             state.sections = self.makeSections(doc: document)
+        case .setNext(let isNext):
+            state.isNext = isNext
         }
         return state
     }
@@ -126,7 +135,7 @@ final class UIBuildUpViewReactor: Reactor {
 extension UIBuildUpViewReactor {
     func makeSections(doc: QuestionDocument) -> [BuildUpSection] {
         let choiceSectionItems = doc.chioces
-            .map { BuildUpChoiceCellReactor(docId: doc.question.id, choice: $0) }
+            .map { BuildUpChoiceCellReactor(docId: doc.docId, choice: $0) }
             .map(BuildUpSectionItem.checkChioce)
         
         return [

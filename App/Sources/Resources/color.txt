@@ -9,3 +9,5 @@ AppMenuHeaderTitle: #9C9C9C
 AppMenuActionMenuBG: #F2F2F2
 
 AuthProviderSelectedBG: #b3cffc
+
+CardBg: #b5b2aa

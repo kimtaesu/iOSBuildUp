@@ -1,4 +1,3 @@
-
 //
 //  FIRFirestore+Rx.swift
 //  RxFirebase
@@ -6,6 +5,7 @@
 //  Created by Arnaud Dorgans on 31/03/2018.
 //  Copyright © 2018 RxSwiftCommunity. All rights reserved.
 //
+
 import RxCocoa
 import RxSwift
 import FirebaseFirestore

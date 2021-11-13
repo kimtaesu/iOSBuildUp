@@ -8,7 +8,6 @@
 import Foundation
 
 struct CheckChoice: Equatable {
-    let id: String
     let answers: String
     let isCorrect: Bool
 }

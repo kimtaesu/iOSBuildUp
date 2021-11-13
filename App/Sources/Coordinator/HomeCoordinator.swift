@@ -32,10 +32,11 @@ class HomeCoordinator: NavigationCoordinator<HomeRoute> {
   override func prepareTransition(for route: HomeRoute) -> NavigationTransition {
     switch route {
     case .buildUp:
-        let dependency: UIBuildUpViewReactor.Dependency = .init(authService: self.authService, buildUpService: self.buildUpService)
-        let reactor = UIBuildUpViewReactor(dependency: dependency)
-        let viewController = UIBuildUpViewController(reactor: reactor)
-        return .push(viewController)
+//        let dependency: UIBuildUpViewReactor.Dependency = .init(authService: self.authService, buildUpService: self.buildUpService)
+//        let reactor = UIBuildUpViewReactor(dependency: dependency)
+//        let viewController = UIBuildUpViewController(reactor: reactor)
+//        return .push(viewController)
+        return .none()
     case .home:
         let reactor = HomeViewReactor()
         let viewController = HomeViewController(reactor: reactor)

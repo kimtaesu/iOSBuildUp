@@ -14,6 +14,7 @@ import ReusableKit
 import RxDataSources
 import JJFloatingActionButton
 import DropDown
+import NotificationBannerSwift
 
 class UIBuildUpViewController: BaseViewController {
     
@@ -54,6 +55,8 @@ class UIBuildUpViewController: BaseViewController {
         let dropDown = DropDown()
         return dropDown
     }()
+    
+    private var userStateChangeDisposeBag = DisposeBag()
     
     private let userProfileView: UIUserProfileView = {
         let button = UIUserProfileView(frame: .init(x: 0, y: 0, width: 36, height: 36))
@@ -103,6 +106,7 @@ class UIBuildUpViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .white
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.nextButton)
         self.view.addSubview(self.floatingButton)
@@ -216,6 +220,13 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .map { _ in Reactor.Action.viewWillAppear }
             .debug("viewWillAppear")
             .bind(to: reactor.action)
+            .disposed(by: self.userStateChangeDisposeBag)
+        
+        self.rx.viewWillDisappear
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.userStateChangeDisposeBag = DisposeBag()
+            })
             .disposed(by: self.disposeBag)
         
         self.nextButton.rx.tap
@@ -251,6 +262,11 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .bind(to: self.userProfileView.rx.providerImage)
             .disposed(by: self.disposeBag)
 
+        reactor.state.map { $0.isNext }
+            .distinctUntilChanged()
+            .subscribe()
+            .disposed(by: self.disposeBag)
+        
         self.userProfileView.rx.tapGestureEnded()
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }

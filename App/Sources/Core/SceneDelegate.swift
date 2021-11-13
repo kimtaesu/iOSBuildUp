@@ -32,11 +32,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let authService: AuthServiceType = FirebaseAuthService()
         
         let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
+        let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
         
         let splashViewController = UISplashViewController(onNext: {
-            let dependency = UIBuildUpViewReactor.Dependency.init(authService: authService, buildUpService: buildUpService)
-            let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
-            let viewController = UINavigationController(rootViewController: UIBuildUpViewController(reactor: reactor))
+            let reactor = MainViewContoller.Reactor(repository: fireStoreRepository)
+            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: {
+                let dependency = UIBuildUpViewReactor.Dependency.init(authService: authService, buildUpService: buildUpService, firestoreRepository: fireStoreRepository)
+                let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
+                return UIBuildUpViewController(reactor: reactor)
+            }))
             window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
         window.rootViewController = splashViewController

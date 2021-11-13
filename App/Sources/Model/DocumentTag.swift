@@ -8,6 +8,5 @@
 import Foundation
 
 struct DocumentTag: Equatable {
-    let id: String
     let title: String
 }

@@ -8,6 +8,5 @@
 import Foundation
 
 struct AttributeQuestion: Equatable {
-    let id: String
     let question: String
 }

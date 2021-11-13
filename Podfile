@@ -10,6 +10,8 @@ target 'App' do
   inherit! :search_paths
   project 'App/App.xcodeproj'
 
+  pod 'SwiftDictionaryCoding'
+  
   # Rx
   pod 'RxSwift', '6.2.0'
   pod 'RxCocoa', '6.2.0'
@@ -40,6 +42,7 @@ target 'App' do
   pod 'Toaster'
   pod 'Kingfisher'
   pod 'DropDown'
+  pod 'NotificationBannerSwift', '~> 3.0.0'
   
   # Firebase
   pod 'Firebase/Analytics'
