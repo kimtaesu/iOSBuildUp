@@ -31,8 +31,7 @@ enum AuthDropDownItem: CaseIterable {
         }
     }
     
-    static var signInItems: [AuthDropDownItem] = [.google]
-    static var signOutItems: [AuthDropDownItem] = [.logout]
+    static let signInItems: [AuthDropDownItem] = [.google]
     
     static func create(title: String) -> AuthDropDownItem? {
         return Self.allCases.first { $0.title == title }

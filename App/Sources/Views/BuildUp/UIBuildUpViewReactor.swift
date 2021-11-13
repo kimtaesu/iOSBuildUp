@@ -20,6 +20,8 @@ final class UIBuildUpViewReactor: Reactor {
     enum Action {
         case refresh
         case signIn(AuthCredential)
+        case viewWillAppear
+        
         case signOut
         case tapNext
     }
@@ -27,7 +29,7 @@ final class UIBuildUpViewReactor: Reactor {
     enum Mutation {
         case setLoading(Bool)
         case setDocument(QuestionDocument)
-        case setAuthData(AuthDataResult?)
+        case setUser(User?)
         case setSignInError(Error)
     }
     
@@ -40,20 +42,8 @@ final class UIBuildUpViewReactor: Reactor {
         
         var selectedAnswers: [CheckChoice] = []
         
-        var authDataResult: AuthDataResult?
+        var user: User?
         var sections: [BuildUpSection] = []
-        
-        var userPhotoURL: URL? {
-            logger.debug("user photo url: \(String(describing: self.authDataResult?.user.photoURL))")
-            return self.authDataResult?.user.photoURL
-        }
-        var authProvider: AuthProvider? {
-            return AuthProvider.create(provider: self.authDataResult?.credential?.provider)
-        }
-        
-        var isLoggined: Bool {
-            return self.authDataResult != nil && self.authDataResult?.user.isAnonymous == false
-        }
     }
     
     private let authService: AuthServiceType
@@ -67,14 +57,17 @@ final class UIBuildUpViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .viewWillAppear:
+            return self.authService.stateDidChange()
+                .map(Mutation.setUser)
         case .signOut:
             return self.authService.signOut()
-                .map { Mutation.setAuthData(nil) }
+                .map { Mutation.setUser(nil) }
                 .catch { .just(.setSignInError($0))}
             
         case .signIn(let credential):
             return self.authService.signIn(credential)
-                .map(Mutation.setAuthData)
+                .map(Mutation.setUser)
                 .catch { .just(.setSignInError($0))}
             
         case .tapNext:
@@ -87,7 +80,9 @@ final class UIBuildUpViewReactor: Reactor {
                 .map(Mutation.setDocument)
             let endLoading: Observable<Mutation> = .just(.setLoading(false))
             
-            return Observable.concat(startLoading, nextQuestion, endLoading)
+            let serUser: Observable<Mutation> = self.authService.getUser()
+                .map(Mutation.setUser)
+            return Observable.concat(startLoading, serUser, nextQuestion, endLoading)
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
@@ -97,8 +92,8 @@ final class UIBuildUpViewReactor: Reactor {
         switch mutation {
         case .setSignInError(let error):
             state.signInError = error
-        case .setAuthData(let data):
-            state.authDataResult = data
+        case .setUser(let user):
+            state.user = user
         case .setLoading(let isLoading):
             state.isLoading = isLoading
         case .setDocument(let document):
@@ -119,9 +114,27 @@ extension UIBuildUpViewReactor {
         
         return [
             .questions([.question(doc.question)]),
-//            .like(.like(.init(doc.likes))),
             .tag(.tags(doc.tags)),
             .answers(choiceSectionItems)
         ]
+    }
+}
+
+extension UIBuildUpViewReactor.State {
+    var userPhotoURL: URL? {
+        return self.user?.photoURL
+    }
+    var authProvider: AuthProvider? {
+        
+        let providerID = self.user?.providerData.first?.providerID
+        return AuthProvider.create(provider: providerID)
+    }
+    
+    var isLoggined: Bool {
+        return self.user != nil && self.user?.isAnonymous == false
+    }
+    
+    var authDropDownItems: [AuthDropDownItem] {
+        return self.isLoggined ? [.logout] : AuthDropDownItem.signInItems
     }
 }

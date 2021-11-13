@@ -8,19 +8,6 @@
 import UIKit
 
 class UIUserProfileView: UIControl {
-    
-    override var isHighlighted: Bool {
-        didSet {
-            UIView.animate(withDuration: 0.3) {
-                if self.isHighlighted {
-                    self.profileImageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-                } else {
-                    self.profileImageView.transform = .identity
-                }
-            }
-        }
-    }
-        
     public var placeHolderImage: UIImage = Asset.accountCircle.image.withRenderingMode(.alwaysTemplate)
     
     public var providerImage: UIImage? {
@@ -67,6 +54,7 @@ class UIUserProfileView: UIControl {
     }
     
     private func layoutProfileView() {
+        self.profileImageView.sizeToFit()
         self.profileImageView.frame = self.frame
         self.profileImageView.layer.cornerRadius = self.bounds.width / 2
     }
@@ -74,6 +62,7 @@ class UIUserProfileView: UIControl {
     private func layoutBadgeView() {
         let size: CGFloat = self.bounds.width / 2
         let midX: CGFloat = size / 2
+        self.providerBadgeImageView.sizeToFit()
         self.providerBadgeImageView.layer.cornerRadius = midX
         self.providerBadgeImageView.size = .init(width: size, height: size)
         self.providerBadgeImageView.right = self.bounds.right + (midX / 2)

@@ -9,15 +9,18 @@ import Foundation
 import RxSwift
 import FirebaseAuth
 import Firebase
-import GoogleSignIn
 
 class FirebaseAuthService: AuthServiceType {
- 
 
     private let authProvider = Auth.auth()
+
+    func getUser() -> Observable<User?> {
+        return .just(self.authProvider.currentUser)
+    }
     
-    func signIn(_ credential: AuthCredential) -> Observable<AuthDataResult> {
+    func signIn(_ credential: AuthCredential) -> Observable<User> {
         self.authProvider.rx.signInAndRetrieveData(with: credential)
+            .map { $0.user }
     }
     
     func signOut() -> Observable<Void> {
@@ -26,5 +29,9 @@ class FirebaseAuthService: AuthServiceType {
             try authProvider.signOut()
             return .just(())
         }
+    }
+    
+    func stateDidChange() -> Observable<User?> {
+        return authProvider.rx.stateDidChange
     }
 }

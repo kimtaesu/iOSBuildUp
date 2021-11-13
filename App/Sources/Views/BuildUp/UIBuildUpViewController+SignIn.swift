@@ -32,9 +32,14 @@ extension UIBuildUpViewController {
 
         // Start the sign in flow!
         GIDSignIn.sharedInstance.signIn(with: config, presenting: self) { [unowned self] user, error in
-
-            guard error == nil else { return self.displaySignInError(error) }
-
+            if let error = error {
+                let errorCode = (error as NSError).code
+                if errorCode == GIDSignInErrorCode.cancel.rawValue {
+                    return
+                }
+                return self.displaySignInError(error)
+            }
+            
             guard
                 let authentication = user?.authentication,
                 let idToken = authentication.idToken

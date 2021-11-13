@@ -140,6 +140,7 @@ class UIBuildUpViewController: BaseViewController {
         
     }
     
+    
     @objc func back() {
         self.dismiss(animated: true)
     }
@@ -198,13 +199,20 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
         self.floatingButton.addItem(
             title: "오탈자 및 문의하기",
             image: Asset.email.image
-        ) { item in
+        ) { [weak self] item in
+            guard let self = self else { return }
             guard let doc = reactor.currentState.document else { return }
             self.contactDocument(RemoteConfigStore.shared.contactEmail, doc: doc)
         }
 
         self.rx.viewDidLoad
             .map { Reactor.Action.refresh }
+            .bind(to: reactor.action)
+            .disposed(by: self.disposeBag)
+        
+        self.rx.viewWillAppear
+            .map { _ in Reactor.Action.viewWillAppear }
+            .debug("viewWillAppear")
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
@@ -228,6 +236,7 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.userPhotoURL }
+            .distinctUntilChanged()
             .subscribe(onNext: { [weak self] url in
                 guard let self = self else { return }
                 self.userProfileView.setImage(url: url)
@@ -235,23 +244,18 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.authProvider }
-            .subscribe(onNext: { [weak self] authProvider in
-                self?.userProfileView.providerImage = authProvider?.icon
-            })
+            .distinctUntilChanged()
+            .map { $0?.icon }
+            .bind(to: self.userProfileView.rx.providerImage)
             .disposed(by: self.disposeBag)
 
-        
-        
-        
         self.userProfileView.rx.tapGestureEnded()
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                
-                
-                let dataSource: [AuthDropDownItem] = reactor.currentState.isLoggined == true ? AuthDropDownItem.signOutItems : AuthDropDownItem.signInItems
+                let dataSources = reactor.currentState.authDropDownItems
                 self.showSignProviderDropDown(
                     anchorView: self.userProfileView,
-                    dataSources: dataSource,
+                    dataSources: dataSources,
                     didSelected: { [weak self] provider in
                         guard let self = self else { return }
                         guard let provider = provider else { return }
