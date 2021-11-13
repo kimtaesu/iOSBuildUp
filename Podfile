@@ -32,7 +32,7 @@ target 'App' do
   pod 'SnapKit', '~> 5.0.0'
   pod 'ReusableKit'
   pod 'ManualLayout'
-  pod 'SimpleCheckbox'
+  pod 'M13Checkbox'
   pod 'SVProgressHUD'
   pod 'XCoordinator', '~> 2.0'
   pod 'JJFloatingActionButton'

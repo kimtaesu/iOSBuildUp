@@ -205,11 +205,13 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
             self.contactDocument(RemoteConfigStore.shared.contactEmail, doc: doc)
         }
 
+        // MARK: Life Cycle 
         self.rx.viewDidLoad
             .map { Reactor.Action.refresh }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
+        // TODO: 중복으로 subscribe 되는지 확인
         self.rx.viewWillAppear
             .map { _ in Reactor.Action.viewWillAppear }
             .debug("viewWillAppear")
@@ -219,7 +221,7 @@ extension UIBuildUpViewController: ReactorKit.View, HasDisposeBag {
         self.nextButton.rx.tap
             .map { _ in Reactor.Action.tapNext }
             .bind(to: reactor.action)
-            .disposed(by: self.disposeBag)
+            .disposed(by: self.disposeBag) 
         
         reactor.state.map { $0.sections }
             .bind(to: self.collectionView.rx.items(dataSource: self.dataSource))

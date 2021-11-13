@@ -6,13 +6,21 @@
 //
 
 import ReactorKit
+import RxSwift
+import RxCocoa
+
+extension CheckChoice {
+    enum Event {
+        case setChecked(docId: String, CheckChoice)
+    }
+    static let event = PublishSubject<Event>()
+}
 
 final class BuildUpChoiceCellReactor: Reactor {
     
     let initialState: State
     
     enum Action {
-        case setChecked(Bool)
         case touchCell
     }
     enum Mutation {
@@ -20,6 +28,7 @@ final class BuildUpChoiceCellReactor: Reactor {
     }
     
     struct State {
+        let docId: String
         let choice: CheckChoice
         var answers: String {
             self.choice.answers
@@ -27,16 +36,35 @@ final class BuildUpChoiceCellReactor: Reactor {
         var isChecked: Bool = false
     }
     
-    init(choice: CheckChoice) {
-        self.initialState = State(choice: choice)
+    init(docId: String, choice: CheckChoice) {
+        self.initialState = State(docId: docId, choice: choice)
+    }
+    
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let currentChoice: CheckChoice = self.currentState.choice
+        let currentDocId: String = self.currentState.docId
+        
+        let fromCheckCoiceEvent: Observable<Mutation> = CheckChoice.event
+            .filter { event in
+                switch event {
+                case let .setChecked(docId, _):
+                    return currentDocId == docId
+                }
+            }
+            .map { event in
+                switch event {
+                case let .setChecked(_, choice):
+                    let isChecked = currentChoice == choice
+                    return .setChecked(isChecked)
+                }
+        }
+        return Observable.of(mutation, fromCheckCoiceEvent).merge()
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .touchCell:
             return .just(Mutation.setChecked(!self.currentState.isChecked))
-        case .setChecked(let isChecked):
-            return .just(Mutation.setChecked(isChecked))
         }
     }
     

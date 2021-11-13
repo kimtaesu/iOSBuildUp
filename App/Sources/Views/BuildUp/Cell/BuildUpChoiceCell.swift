@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import SimpleCheckbox
+import M13Checkbox
 
 class BuildUpChoiceCell: UICollectionViewCell {
     
@@ -30,17 +30,14 @@ class BuildUpChoiceCell: UICollectionViewCell {
         return label
     }()
     
-    private let circleBox: Checkbox = {
-        let circleBox = Checkbox()
-        circleBox.borderStyle = .circle
-        circleBox.checkmarkStyle = .circle
-        circleBox.borderLineWidth = 1
-        circleBox.uncheckedBorderColor = .black
-        circleBox.checkedBorderColor = ColorName.accent.color
-        circleBox.checkmarkColor = ColorName.accent.color
-        circleBox.isUserInteractionEnabled = false
-        circleBox.checkmarkSize = 0.6
-        return circleBox
+    private let checkBox: M13Checkbox = {
+        let checkBox = M13Checkbox()
+        checkBox.isUserInteractionEnabled = false
+        checkBox.markType = .checkmark
+        checkBox.stateChangeAnimation = .fill
+        checkBox.checkmarkLineWidth = 1.5
+        checkBox.tintColor = ColorName.accent.color
+        return checkBox
     }()
     
     override init(frame: CGRect) {
@@ -48,7 +45,7 @@ class BuildUpChoiceCell: UICollectionViewCell {
         
         self.layer.borderWidth = 1
         self.layer.borderColor = ColorName.primary.color.cgColor
-        [self.answersLabel, self.circleBox].forEach {
+        [self.answersLabel, self.checkBox].forEach {
             self.contentView.addSubview($0)
         }
         
@@ -57,7 +54,7 @@ class BuildUpChoiceCell: UICollectionViewCell {
             $0.centerY.equalToSuperview()
         }
         
-        self.circleBox.snp.makeConstraints {
+        self.checkBox.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(Metrics.right)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(Metrics.checkBoxSize)
@@ -89,13 +86,14 @@ extension BuildUpChoiceCell: ReactorKit.View, HasDisposeBag {
     func bind(reactor: Reactor) {
         
         self.rx.tapGestureEnded()
-            .map { _ in Reactor.Action.touchCell }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { _ in
+                CheckChoice.event.onNext(.setChecked(docId: reactor.currentState.docId, reactor.currentState.choice))
+            })
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.isChecked }
             .distinctUntilChanged()
-            .bind(to: self.circleBox.rx.isChecked)
+            .bind(to: self.checkBox.rx.isChecked(animation: false))
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.answers }

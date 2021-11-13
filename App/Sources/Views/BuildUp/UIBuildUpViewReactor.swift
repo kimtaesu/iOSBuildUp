@@ -31,16 +31,15 @@ final class UIBuildUpViewReactor: Reactor {
         case setDocument(QuestionDocument)
         case setUser(User?)
         case setSignInError(Error)
+        case setChoiceSelected(CheckChoice)
     }
     
     struct State {
+        var document: QuestionDocument?
         var signInError: Error?
         var isLoading: Bool = false
-        var document: QuestionDocument?
-        var question: String?
-        var choices: [CheckChoice]?
         
-        var selectedAnswers: [CheckChoice] = []
+        var selectedChoice: CheckChoice?
         
         var user: User?
         var sections: [BuildUpSection] = []
@@ -55,8 +54,37 @@ final class UIBuildUpViewReactor: Reactor {
         self.initialState = State()
     }
     
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let fromCheckCoiceEvent: Observable<Mutation> = CheckChoice.event
+            .filter { [weak self] event in
+                let currentDocId = self?.currentState.document?.question.id
+                switch event {
+                case let .setChecked(docId, _):
+                    return currentDocId == docId
+                }
+            }
+            .flatMap { event -> Observable<Mutation> in
+                switch event {
+                case let .setChecked(_, choice):
+                    return .just(.setChoiceSelected(choice))
+                }
+        }
+        return Observable.of(mutation, fromCheckCoiceEvent).merge()
+    }
+    
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .refresh:
+            guard !self.currentState.isLoading else { return .empty() }
+            
+            let startLoading: Observable<Mutation> = .just(.setLoading(true))
+            let nextQuestion: Observable<Mutation> = self.buildUpService.nextQuestion()
+                .map(Mutation.setDocument)
+            let endLoading: Observable<Mutation> = .just(.setLoading(false))
+            
+            let serUser: Observable<Mutation> = self.authService.getUser()
+                .map(Mutation.setUser)
+            return Observable.concat(startLoading, serUser, nextQuestion, endLoading)
         case .viewWillAppear:
             return self.authService.stateDidChange()
                 .map(Mutation.setUser)
@@ -72,17 +100,6 @@ final class UIBuildUpViewReactor: Reactor {
             
         case .tapNext:
             return .empty()
-        case .refresh:
-            guard !self.currentState.isLoading else { return .empty() }
-            
-            let startLoading: Observable<Mutation> = .just(.setLoading(true))
-            let nextQuestion: Observable<Mutation> = self.buildUpService.nextQuestion()
-                .map(Mutation.setDocument)
-            let endLoading: Observable<Mutation> = .just(.setLoading(false))
-            
-            let serUser: Observable<Mutation> = self.authService.getUser()
-                .map(Mutation.setUser)
-            return Observable.concat(startLoading, serUser, nextQuestion, endLoading)
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
@@ -90,6 +107,8 @@ final class UIBuildUpViewReactor: Reactor {
         state.signInError = nil
         
         switch mutation {
+        case .setChoiceSelected(let selected):
+            state.selectedChoice = selected
         case .setSignInError(let error):
             state.signInError = error
         case .setUser(let user):
@@ -106,11 +125,9 @@ final class UIBuildUpViewReactor: Reactor {
 
 extension UIBuildUpViewReactor {
     func makeSections(doc: QuestionDocument) -> [BuildUpSection] {
-        
         let choiceSectionItems = doc.chioces
-            .map(BuildUpChoiceCellReactor.init)
+            .map { BuildUpChoiceCellReactor(docId: doc.question.id, choice: $0) }
             .map(BuildUpSectionItem.checkChioce)
-        
         
         return [
             .questions([.question(doc.question)]),
