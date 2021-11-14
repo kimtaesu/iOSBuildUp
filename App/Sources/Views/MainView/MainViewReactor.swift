@@ -7,11 +7,6 @@
 
 import ReactorKit
 
-struct MainCardModel: Codable, Equatable {
-    let title: String
-    let thumbnail: String?
-}
-
 final class MainViewReactor: Reactor {
     
     let initialState: State
@@ -43,9 +38,12 @@ final class MainViewReactor: Reactor {
             guard !self.currentState.isRefreshing else { return .empty() }
             let startRefreshing: Observable<Mutation> = .just(.setRefreshing(true))
             let endRefreshing: Observable<Mutation> = .just(.setRefreshing(false))
-            let fetchAllTags = self.repository.getAllTags()
+            let fetchAllTags = self.repository.getAllSubjects()
                 .map(Mutation.setCardItems)
-                .catch { _ in .empty() }
+                .catch { error in
+                    logger.error(error)
+                    return .empty()
+                }
             
             return Observable.concat(startRefreshing, fetchAllTags, endRefreshing)
         }
@@ -55,7 +53,7 @@ final class MainViewReactor: Reactor {
         switch mutation {
         case .setCardItems(let items):
             let cardSectionItems = items
-                .map(MainCardCellReactor.init)
+                .map { MainCardCellReactor.init(item: $0, repository: self.repository) }
                 .map(MainViewSectionItem.card)
             state.sections = [MainViewSection.cards(cardSectionItems)]
             

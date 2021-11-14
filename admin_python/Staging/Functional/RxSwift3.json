@@ -1,0 +1,18 @@
+{
+	"question": {
+		"text": "Functional13 Hot Observable의 특징이 아닌 것은 무엇일까요?"
+	},
+	"choices": [
+		{
+		 "answer": "A", 
+		 "isCorrect": true
+		},
+		{
+		 "answer": "B", 
+		 "isCorrect": false
+		}
+	],
+	"tags": [
+		"FunctionalProgramming"
+	]
+}

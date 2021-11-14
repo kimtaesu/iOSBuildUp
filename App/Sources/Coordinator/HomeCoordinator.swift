@@ -17,15 +17,12 @@ enum HomeRoute: Route {
 
 class HomeCoordinator: NavigationCoordinator<HomeRoute> {
   
-    private let buildUpService: BuildUpServiceType
     private let authService: AuthServiceType
     
     init(
-        authService: AuthServiceType,
-        buildUpService: BuildUpServiceType
+        authService: AuthServiceType
     ) {
         self.authService = authService
-        self.buildUpService = buildUpService
         super.init(initialRoute: .buildUp)
     }
   

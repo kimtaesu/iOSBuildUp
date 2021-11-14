@@ -45,7 +45,7 @@ extension BuildUpSection: SectionModelType {
 
 enum BuildUpSectionItem {
     case question(AttributeQuestion)
-    case tags([DocumentTag])
+    case tags([String])
     case like(BuildUpLikeCellReactor)
     case checkChioce(BuildUpChoiceCellReactor)
 }

@@ -11,8 +11,8 @@ import FirebaseAuth
 final class UIBuildUpViewReactor: Reactor {
     
     struct Dependency {
+        let data: MainCardModel
         let authService: AuthServiceType
-        let buildUpService: BuildUpServiceType
         let firestoreRepository: FirestoreRepository
     }
     
@@ -29,7 +29,7 @@ final class UIBuildUpViewReactor: Reactor {
     
     enum Mutation {
         case setLoading(Bool)
-        case setDocument(QuestionDocument)
+        case setQuestions([QuestionDocument])
         case setUser(User?)
         case setSignInError(Error)
         case setChoiceSelected(CheckChoice)
@@ -37,6 +37,7 @@ final class UIBuildUpViewReactor: Reactor {
     }
     
     struct State {
+        var questions: [QuestionDocument] = []
         var document: QuestionDocument?
         var signInError: Error?
         var isLoading: Bool = false
@@ -49,13 +50,13 @@ final class UIBuildUpViewReactor: Reactor {
     }
     
     private let authService: AuthServiceType
-    private let buildUpService: BuildUpServiceType
     private let firestoreRepository: FirestoreRepository
+    private let data: MainCardModel
     
     init(dependency: Dependency) {
+        self.data = dependency.data
         self.firestoreRepository = dependency.firestoreRepository
         self.authService = dependency.authService
-        self.buildUpService = dependency.buildUpService
         self.initialState = State()
     }
     
@@ -83,8 +84,8 @@ final class UIBuildUpViewReactor: Reactor {
             guard !self.currentState.isLoading else { return .empty() }
             
             let startLoading: Observable<Mutation> = .just(.setLoading(true))
-            let nextQuestion: Observable<Mutation> = self.buildUpService.nextQuestion()
-                .map(Mutation.setDocument)
+            let nextQuestion: Observable<Mutation> = self.firestoreRepository.getQuestionsBySubject(subject: self.data.collectionId)
+                .map(Mutation.setQuestions)
             let endLoading: Observable<Mutation> = .just(.setLoading(false))
 
             return Observable.concat(startLoading, nextQuestion, endLoading)
@@ -122,9 +123,9 @@ final class UIBuildUpViewReactor: Reactor {
             state.user = user
         case .setLoading(let isLoading):
             state.isLoading = isLoading
-        case .setDocument(let document):
-            state.document = document
-            state.sections = self.makeSections(doc: document)
+        case .setQuestions(let questions):
+            state.document = questions.first
+            state.sections = self.makeSections(doc: questions.first!)
         case .setNext(let isNext):
             state.isNext = isNext
         }
@@ -134,7 +135,7 @@ final class UIBuildUpViewReactor: Reactor {
 
 extension UIBuildUpViewReactor {
     func makeSections(doc: QuestionDocument) -> [BuildUpSection] {
-        let choiceSectionItems = doc.chioces
+        let choiceSectionItems = doc.choices
             .map { BuildUpChoiceCellReactor(docId: doc.docId, choice: $0) }
             .map(BuildUpSectionItem.checkChioce)
         

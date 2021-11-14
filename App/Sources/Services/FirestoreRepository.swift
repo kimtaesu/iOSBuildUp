@@ -11,13 +11,19 @@ import FirebaseAuth
 import FirebaseFirestore
 import  SwiftDictionaryCoding
 
+
+struct MyQuestionCount {
+    let answerCount: Int
+    let totalCount: Int
+}
+
 class FirestoreRepository {
     
     enum CollectionName: String {
         case buildUp = "build_up"
         case answers = "answers"
         case users = "users"
-        case tag = "tag"
+        case tags = "tags"
     }
     
     private let authService: AuthServiceType
@@ -43,80 +49,66 @@ class FirestoreRepository {
     func answer(docId: String, choice: CheckChoice) -> Observable<Bool> {
         return self.authService.getUserIfNeedAnonymously()
             .flatMap { user -> Observable<Bool> in
-                Firestore.firestore()
-                    .collection(CollectionName.buildUp.rawValue)
-                    .document(docId)
-                    .collection(CollectionName.answers.rawValue)
+                Firestore.firestore().collection("users")
                     .document(user.uid)
+                    .collection("answers")
+                    .document()
                     .setData([
+                        "docId": docId,
                         "timestamp": Date(),
-                        "answer": choice.answers,
+                        "answer": choice.answer,
                         "isCorrect": choice.isCorrect
                     ])
                 return .just(choice.isCorrect)
             }
     }
     
-    func getAllTags() -> Observable<[MainCardModel]> {
-        let tagRef = Firestore.firestore().collection(CollectionName.tag.rawValue)
-        return tagRef.rx.getDocuments().map {
-            try $0.documents.compactMap {
-                try DictionaryDecoder().decode(MainCardModel.self, from: $0.data())
+    func getQuestionsBySubject(subject: String) -> Observable<[QuestionDocument]> {
+        Firestore.firestore().collection(CollectionName.buildUp.rawValue)
+            .whereField("tags", arrayContains: subject)
+            .rx
+            .getDocuments()
+            .map {
+                try $0.documents.compactMap {
+                    try DictionaryDecoder().decode(QuestionDocument.self, from: $0.data())
+                }
             }
-        }
-        .debug("getAllTags")
-//        let aaa = Firestore.firestore().collection("build_up")
-//            .whereField("tag", arrayContains: tagRef.document("ABC"))
-//            .getDocuments { query, error in
-//                query?.documents.forEach { q in
-//                    q.data().forEach { k, v in
-//                        print("!!!!!!!! \(k) \(v)")
-//                    }
-//
-//                }
-//                print("!!!!!!!! ")
-//                query?.documents.forEach { a in
-//                    a.data().forEach { k, v in
-//
-//                        print("!!!!!!!!!! k: \(k) v: \(v)")
-////                        let docRef = (v as? DocumentReference)
-////                        print("!!!!!!!!!!! docRef: \(docRef)")
-////                        docRef?.getDocument(completion: { snap1, error in
-////                            snap1?.data()?.forEach { a, b in
-////                                print("!!!!!!!!!!!!! a: \(a) b: \(b)")
-////                            }
-////                        })
-//                    }
-//                }
-//            }
-//            .collection("answers")
-////            .getDocuments { query, error in
-////
-////                query?.documents.forEach { q in
-////
-////                    q.data().forEach { k, v in
-////                        print("!!!!!!!!! k: \(k) v: \(v)")
-////
-////                    }
-////                }
-////                print("!!!!!!!!! \(query?.count)")
-////            }
-//
-//        print("!!!!!!!!! aaa: \(aaa.path)")
-////            .collection("answers")
-////            .getDocuments { querySnapshot, error in
-////                querySnapshot?.documents.forEach({ queryDocumentSnapshot in
-////                print("!!!!!!!! \(queryDocumentSnapshot.data())")
-////                        })
-////                    }
-//
-////            .getDocument(completion: { doc, error in
-////                print("!!!!!!!!!!!! \(doc?.data())")
-////
-////            })
-//
-//
-////            .order(by: "registered_time", descending: false)
-////            .whereField("tags", in: ["Swift"])
+            .do(onError: { error in
+                logger.error(error)
+            })
+    }
+    
+    func getMyCompletedCount(subject: String) -> Observable<MyQuestionCount> {
+        return self.authService.getUserIfNeedAnonymously()
+            .flatMap { user in
+                self.getQuestionsBySubject(subject: subject)
+                    .flatMap { question -> Observable<MyQuestionCount> in
+                        
+                        Firestore.firestore().collection(CollectionName.users.rawValue)
+                            .document(user.uid)
+                            .collection("answers")
+                            .whereField("docId", in: question.map { $0.docId })
+                            .rx
+                            .getDocuments()
+                            .map { MyQuestionCount(answerCount: $0.documents.count, totalCount: question.count) }
+                    }
+            }
+            
+//        return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
+//            .whereField("tags", arrayContains: subject)
+//            .rx
+//            .getDocuments()
+//            .map { $0.documents.count }
+    }
+    
+    func getAllSubjects() -> Observable<[MainCardModel]> {
+        return Firestore.firestore().collection(CollectionName.tags.rawValue)
+            .rx
+            .getDocuments()
+            .map {
+                try $0.documents.compactMap {
+                    try DictionaryDecoder().decode(MainCardModel.self, from: $0.data())
+                }
+            }
     }
 }

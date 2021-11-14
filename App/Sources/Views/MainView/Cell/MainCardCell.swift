@@ -89,6 +89,12 @@ extension MainCardCell: ReactorKit.View, HasDisposeBag {
     typealias Reactor = MainCardCellReactor
     
     func bind(reactor: Reactor) {
+        
+        Observable.just(true)
+            .map { _ in Reactor.Action.getCompletedCount }
+            .bind(to: reactor.action)
+            .disposed(by: self.disposeBag)
+        
         reactor.state.map { $0.item }
         .distinctUntilChanged()
         .subscribe(onNext: { [weak self] item in

@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import ReusableKit
 import RxDataSources
+import FirebaseFirestore
 
 class MainViewContoller: BaseViewController {
     
@@ -36,10 +37,10 @@ class MainViewContoller: BaseViewController {
         return collectionView
     }()
  
-    private let buildUpViewScreen: () -> UIBuildUpViewController
+    private let buildUpViewScreen: (MainCardModel) -> UIBuildUpViewController
     init(
         reactor: Reactor,
-        buildUpViewScreen: @escaping () -> UIBuildUpViewController
+        buildUpViewScreen: @escaping (MainCardModel) -> UIBuildUpViewController
     ) {
         defer { self.reactor = reactor }
         self.buildUpViewScreen = buildUpViewScreen
@@ -90,10 +91,13 @@ extension MainViewContoller: ReactorKit.View, HasDisposeBag {
         
         self.collectionView.rx.itemSelected
             .map { indexPath in self.dataSource[indexPath] }
-            .subscribe(onNext: { [weak self] item in
+            .subscribe(onNext: { [weak self] sectionItem in
                 guard let self = self else { return }
-                let buildUpViewController = self.buildUpViewScreen()
-                self.navigationController?.pushViewController(buildUpViewController, animated: true)
+                switch sectionItem {
+                case .card(let reactor):
+                    let buildUpViewController = self.buildUpViewScreen(reactor.currentState.item)
+                    self.navigationController?.pushViewController(buildUpViewController, animated: true)
+                }
             })
             .disposed(by: self.disposeBag)
         

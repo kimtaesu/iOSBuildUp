@@ -7,18 +7,9 @@
 
 import Foundation
 
-struct QuestionDocument: Equatable {
+struct QuestionDocument: Codable, Equatable {
     let docId: String
     let question: AttributeQuestion
-    let chioces: [CheckChoice]
-    let tags: [DocumentTag]
-}
-
-extension QuestionDocument {
-    init(document: [String: Any]) {
-        docId = ""
-        question = .init(question: "")
-        chioces = []
-        tags = []
-    }
+    let choices: [CheckChoice]
+    let tags: [String]
 }

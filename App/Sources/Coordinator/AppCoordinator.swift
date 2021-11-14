@@ -18,14 +18,11 @@ enum AppRoute: Route {
 class AppCoordinator: NavigationCoordinator<AppRoute> {
   
     private let authService: AuthServiceType
-    private let buildUpService: BuildUpServiceType
     
     init(
-        authService: AuthServiceType,
-        buildUpService: BuildUpServiceType
+        authService: AuthServiceType
     ) {
         self.authService = authService
-        self.buildUpService = buildUpService
         super.init(initialRoute: .splash)
     }
     override func prepareTransition(for route: AppRoute) -> NavigationTransition {

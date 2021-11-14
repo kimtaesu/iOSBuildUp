@@ -46,14 +46,14 @@ class BuildUpTagCell: UICollectionViewCell {
         self.tagListView.removeAllTags()
     }
     
-    func configCell(tags: [DocumentTag]) {
+    func configCell(tags: [String]) {
         self.tagListView.removeAllTags()
-        self.tagListView.addTags(tags.map { $0.title })
+        self.tagListView.addTags(tags)
     }
 }
 
 extension BuildUpTagCell {
-    class func size(_ width: CGFloat, tags: [DocumentTag]) -> CGSize {
+    class func size(_ width: CGFloat, tags: [String]) -> CGSize {
         return .init(width: width, height: 80)
     }
 }

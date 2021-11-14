@@ -33,6 +33,6 @@ extension QuestionDocument {
     }
     
     var asBodyMail: String {
-        "안녕하세요! \(self.docId) \(self.question.question) 오탈자 및 문의드립니다."
+        "안녕하세요! \(self.docId) \(self.question.text) 오탈자 및 문의드립니다."
     }
 }

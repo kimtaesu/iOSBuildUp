@@ -42,13 +42,13 @@ class BuildUpQuestionCell: UICollectionViewCell {
     }
     
     func configCell(_ question: AttributeQuestion) {
-        self.questionLabel.text = question.question
+        self.questionLabel.text = question.text
     }
 }
 
 extension BuildUpQuestionCell {
     class func size(_ width: CGFloat, _ viewHeight: CGFloat, question: AttributeQuestion) -> CGSize {
-        let height = snap(question.question.height(thatFitsWidth: width, font: Font.question, maximumNumberOfLines: 0))
+        let height = snap(question.text.height(thatFitsWidth: width, font: Font.question, maximumNumberOfLines: 0))
         return .init(width: width, height: height)
     }
 }

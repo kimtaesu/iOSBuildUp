@@ -24,10 +24,9 @@ class MainTabCoordinator: TabBarCoordinator<MainRoute> {
     private let appInfoRouter: StrongRouter<AppInfoRoute>
     
     convenience init(
-        authService: AuthServiceType,
-        buildUpService: BuildUpServiceType
+        authService: AuthServiceType
     ) {
-        let homeCoordinator = HomeCoordinator(authService: authService, buildUpService: buildUpService)
+        let homeCoordinator = HomeCoordinator(authService: authService)
         homeCoordinator.rootViewController.tabBarItem = MainTabItem.home.tabItem
 
         let searchCoordinator = SearchCoordinator()

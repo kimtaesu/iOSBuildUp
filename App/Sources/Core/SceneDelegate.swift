@@ -31,13 +31,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let authService: AuthServiceType = FirebaseAuthService()
         
-        let buildUpService: BuildUpServiceType = FireStoreBuildUpService()
         let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
         
         let splashViewController = UISplashViewController(onNext: {
             let reactor = MainViewContoller.Reactor(repository: fireStoreRepository)
-            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: {
-                let dependency = UIBuildUpViewReactor.Dependency.init(authService: authService, buildUpService: buildUpService, firestoreRepository: fireStoreRepository)
+            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: { data in
+                let dependency = UIBuildUpViewReactor.Dependency.init(data: data, authService: authService, firestoreRepository: fireStoreRepository)
                 let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
                 return UIBuildUpViewController(reactor: reactor)
             }))

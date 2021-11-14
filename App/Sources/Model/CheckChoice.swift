@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CheckChoice: Equatable {
-    let answers: String
+struct CheckChoice: Codable, Equatable {
+    let answer: String
     let isCorrect: Bool
 }

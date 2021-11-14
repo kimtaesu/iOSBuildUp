@@ -31,7 +31,7 @@ final class BuildUpChoiceCellReactor: Reactor {
         let docId: String
         let choice: CheckChoice
         var answers: String {
-            self.choice.answers
+            self.choice.answer
         }
         var isChecked: Bool = false
     }
