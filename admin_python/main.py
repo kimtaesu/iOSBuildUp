@@ -17,15 +17,12 @@ def upload_data(data):
     hash_key.update(data['question']['text'].encode('utf-8'))
     hash_key.update(''.join(data['tags']).encode('utf-8'))
     hash_key.update(''.join([c['answer'] for c in data['choices']]).encode('utf-8'))
-    print()
 
-    tagRefs = [db.collection('tags').document(tag) for tag in data['tags']]
-    # print(tagRefs)
     doc_ref = db.collection('build_up').document(hash_key.hexdigest())
     doc_ref.set({
-        'question': data['question'],
-        'choice': data['choices'],
-        'tags': tagRefs
+        'question': question,
+        'choice': choices,
+        'tags': tags
     })
 
 

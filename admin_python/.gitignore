@@ -1,0 +1,11 @@
+
+# Created by https://www.gitignore.io/api/swift,fastlane,cocoapods
+# Edit at https://www.gitignore.io/?templates=swift,fastlane,cocoapods
+
+### CocoaPods ###
+## CocoaPods GitIgnore Template
+
+# CocoaPods - Only use to conserve bandwidth / Save time on Pushing
+#           - Also handy if you have a large number of dependant pods
+#           - AS PER https://guides.cocoapods.org/using/using-cocoapods.html NEVER IGNORE THE LOCK FILE
+Staging/
