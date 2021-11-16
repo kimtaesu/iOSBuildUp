@@ -1,4 +1,4 @@
-
+import datetime
 import glob, os
 import json
 from google.cloud import firestore
@@ -6,22 +6,23 @@ import hashlib
 
 build_up_collection_name = 'build_up'
 
-def update_tags(data):
+def update_subjects(data):
     db = firestore.Client()
 
-    collectionId = data['collectionId']
+    subject = data['subject']
     title = data['title']
     thumbnail = data['thumbnail']
 
-    doc_ref = db.collection("tags").document(collectionId)
+    doc_ref = db.collection(build_up_collection_name).document(subject)
 
     doc_ref.set({
-        'collectionId': collectionId,
+        'subject': subject,
         'title': title,
+        'subtitle': "",
         'thumbnail': thumbnail
     })
 
-def update_question(data):
+def update_question(subject, sdata):
     db = firestore.Client()
 
     choices = data['choices']
@@ -34,7 +35,8 @@ def update_question(data):
     hash_key.update(''.join([c['answer'] for c in data['choices']]).encode('utf-8'))
     docId = hash_key.hexdigest()
 
-    doc_ref = db.collection(build_up_collection_name).document(docId)
+    db.collection(subject).document(docId)
+    doc_ref = db.collection(build_up_collection_name).document(subject).collection('questions').document(docId)
     doc_ref.set({
         'docId': docId,
         'question': question,
@@ -45,7 +47,7 @@ def update_question(data):
 
 if __name__ == '__main__':
 
-    for root, dirs, files in os.walk("Tag"):
+    for root, dirs, files in os.walk("Subject"):
         for file in files:
             if file.endswith(".json"):
                 file_name = root + "/" + file
@@ -53,14 +55,15 @@ if __name__ == '__main__':
                 with open(file_name, encoding='utf-8', errors='ignore') as json_data:
                     data = json.load(json_data, strict=False)
                     print(data)
-                    update_tags(data)
+                    update_subjects(data)
 
     for root, dirs, files in os.walk("Staging"):
         for file in files:
             if file.endswith(".json"):
+                subject = root.split('/')[1]
                 file_name = root + "/" + file
                 print("open file name: ", file_name)
                 with open(file_name, encoding='utf-8', errors='ignore') as json_data:
                     data = json.load(json_data, strict=False)
                     print(data)
-                    update_question(data)
+                    update_question(subject, data)

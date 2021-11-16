@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import XCoordinator
 import RxViewController
 import SnapKit
 import RxSwift
@@ -14,6 +13,7 @@ import RxCocoa
 import ManualLayout
 import RxGesture
 import Kingfisher
+import RxOptional
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -33,16 +33,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
         
+        // MARK: QuestionListViewController
+        let questionListViewScreen: ((_ subject: String) -> UIQuestionListViewController)! = { subject in
+            let reactor = UIQuestionListViewController.Reactor(subject: subject, repository: fireStoreRepository)
+            return UIQuestionListViewController(reactor: reactor)
+        }
+        // MARK: UIBuildUpViewController
+        let buildUpViewScreen: (_ subject: String, _ docId: String?) -> UIBuildUpViewController = { subject, docId in
+            let dependency = UIBuildUpViewReactor.Dependency(subject: subject, docId: docId, firestoreRepository: fireStoreRepository)
+            let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
+            return UIBuildUpViewController(reactor: reactor, questionListViewScreen: questionListViewScreen)
+        }
+        
+        // MARK: SplashViewController
         let splashViewController = UISplashViewController(onNext: {
             let reactor = MainViewContoller.Reactor(repository: fireStoreRepository)
-            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: { data in
-                let dependency = UIBuildUpViewReactor.Dependency.init(data: data, authService: authService, firestoreRepository: fireStoreRepository)
-                let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
-                return UIBuildUpViewController(reactor: reactor)
-            }))
+            
+            // MARK: MainViewController
+            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: buildUpViewScreen))
+            
             window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
-        window.rootViewController = splashViewController
+
+//                let data = MainCardModel(collectionId: "Swift", title: "Swift", thumbnail: nil)
+//        window.rootViewController = UINavigationController(rootViewController: questionListViewScreen(data))
+        
+        window.rootViewController = UINavigationController(rootViewController: questionListViewScreen("Swift"))
+//        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white
         self.window = window

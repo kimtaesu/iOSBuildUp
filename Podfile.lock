@@ -343,6 +343,7 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.4.0)
   - AppAuth/Core (1.4.0)
   - AppAuth/ExternalUserAgent (1.4.0)
+  - BetterSegmentedControl (2.0.1)
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -500,20 +501,15 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.0)
-  - JJFloatingActionButton (2.5.0)
   - Kingfisher (7.1.1)
   - leveldb-library (1.22.1)
   - M13Checkbox (3.4.0)
   - ManualLayout (1.3.0)
-  - MarqueeLabel (4.0.5)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - NotificationBannerSwift (3.0.6):
-    - MarqueeLabel (~> 4.0.5)
-    - SnapKit (~> 5.0.1)
   - PromisesObjC (2.0.0)
   - ReactorKit (3.1.0):
     - RxSwift (~> 6.0)
@@ -547,24 +543,19 @@ PODS:
   - SwiftLint (0.45.0)
   - SwiftyBeaver (1.9.5)
   - TagListView (1.4.1)
-  - Toaster (2.3.0)
   - WeakMapTable (1.2.0)
-  - XCoordinator (2.0.7):
-    - XCoordinator/Core (= 2.0.7)
-  - XCoordinator/Core (2.0.7)
 
 DEPENDENCIES:
+  - BetterSegmentedControl (~> 2.0)
   - DropDown
   - Firebase/Analytics
   - Firebase/Auth
   - Firebase/Firestore
   - Firebase/RemoteConfig
   - GoogleSignIn
-  - JJFloatingActionButton
   - Kingfisher
   - M13Checkbox
   - ManualLayout
-  - NotificationBannerSwift (~> 3.0.0)
   - ReactorKit
   - ReusableKit
   - RxCocoa (= 6.2.0)
@@ -580,13 +571,12 @@ DEPENDENCIES:
   - SwiftLint
   - SwiftyBeaver
   - TagListView (~> 1.0)
-  - Toaster
-  - XCoordinator (~> 2.0)
 
 SPEC REPOS:
   trunk:
     - abseil
     - AppAuth
+    - BetterSegmentedControl
     - BoringSSL-GRPC
     - Differentiator
     - DropDown
@@ -607,14 +597,11 @@ SPEC REPOS:
     - gRPC-Core
     - GTMAppAuth
     - GTMSessionFetcher
-    - JJFloatingActionButton
     - Kingfisher
     - leveldb-library
     - M13Checkbox
     - ManualLayout
-    - MarqueeLabel
     - nanopb
-    - NotificationBannerSwift
     - PromisesObjC
     - ReactorKit
     - ReusableKit
@@ -632,13 +619,12 @@ SPEC REPOS:
     - SwiftLint
     - SwiftyBeaver
     - TagListView
-    - Toaster
     - WeakMapTable
-    - XCoordinator
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
+  BetterSegmentedControl: 09607b27861d49cbce48b7673b74f9150a3d371a
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
@@ -659,14 +645,11 @@ SPEC CHECKSUMS:
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
-  JJFloatingActionButton: fdc3aefb0f28f04d0f988fa25d5fac97028a9ea7
   Kingfisher: f738f9c4a3415823b8e2985d10aa2d6a9f37bc4d
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   M13Checkbox: 6f59404540ac98ba83a3d1afac335895a40c6a5d
   ManualLayout: 68ac8cfa6b5f656f7a9fadec3730208b95986880
-  MarqueeLabel: 00cc0bcd087111dca575878b3531af980559707d
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  NotificationBannerSwift: 7021be2338f8f29cf424b0aca43da462bf9e2a1a
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   ReactorKit: a06dd2a5c9339287aedf3dc821cfab6347eca106
   ReusableKit: e5f853ad4652e411f96b6119b2488afa12929be6
@@ -684,10 +667,8 @@ SPEC CHECKSUMS:
   SwiftLint: e5c7f1fba68eccfc51509d5b2ce1699f5502e0c7
   SwiftyBeaver: 84069991dd5dca07d7069100985badaca7f0ce82
   TagListView: a1c236d17960a0cf64156725a76ce6d73ebce2be
-  Toaster: c3473963c78e8cabbf6ea6f11ad0fdaae6f54987
   WeakMapTable: 05c694ce8439a7a9ebabb56187287a63c57673d6
-  XCoordinator: 9ee654fedef1ffede33d5c11677708a555c00542
 
-PODFILE CHECKSUM: ddcd368c4f5ca1a71bfdcf75c590871b204a281a
+PODFILE CHECKSUM: a6d47e17b6fd40cc4c6c1c2342e51ec16bb25552
 
 COCOAPODS: 1.11.2

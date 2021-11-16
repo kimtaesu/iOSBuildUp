@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import XCoordinator
 import Firebase
 import FirebaseAuth
 

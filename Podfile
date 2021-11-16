@@ -36,13 +36,10 @@ target 'App' do
   pod 'ManualLayout'
   pod 'M13Checkbox'
   pod 'SVProgressHUD'
-  pod 'XCoordinator', '~> 2.0'
-  pod 'JJFloatingActionButton'
   pod 'TagListView', '~> 1.0'
-  pod 'Toaster'
   pod 'Kingfisher'
   pod 'DropDown'
-  pod 'NotificationBannerSwift', '~> 3.0.0'
+  pod 'BetterSegmentedControl', '~> 2.0'
   
   # Firebase
   pod 'Firebase/Analytics'
