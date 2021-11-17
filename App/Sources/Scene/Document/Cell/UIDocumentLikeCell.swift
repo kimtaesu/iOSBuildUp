@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class BuildUpLikeCell: UICollectionViewCell {
+class UIDocumentLikeCell: UICollectionViewCell {
     
     private struct Metrics {
         static let top: CGFloat = 6
@@ -66,8 +66,8 @@ class BuildUpLikeCell: UICollectionViewCell {
 
 import ReactorKit
 
-extension BuildUpLikeCell: ReactorKit.View, HasDisposeBag {
-    typealias Reactor = BuildUpLikeCellReactor
+extension UIDocumentLikeCell: ReactorKit.View, HasDisposeBag {
+    typealias Reactor = UIDocumentLikeCellReactor
     
     func bind(reactor: Reactor) {
         
@@ -91,7 +91,7 @@ extension BuildUpLikeCell: ReactorKit.View, HasDisposeBag {
     }
 }
 
-extension BuildUpLikeCell {
+extension UIDocumentLikeCell {
     class func size(_ width: CGFloat) -> CGSize {
         let height: CGFloat = Metrics.top
         + Metrics.iconSize

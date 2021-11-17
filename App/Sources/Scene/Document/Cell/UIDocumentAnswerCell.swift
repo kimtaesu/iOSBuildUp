@@ -8,7 +8,7 @@
 import UIKit
 import M13Checkbox
 
-class BuildUpChoiceCell: UICollectionViewCell {
+class UIDocumentAnswerCell: UICollectionViewCell {
     
     private struct Metrics {
         static let left: CGFloat = 16
@@ -48,46 +48,46 @@ class BuildUpChoiceCell: UICollectionViewCell {
         [self.answersLabel, self.checkBox].forEach {
             self.contentView.addSubview($0)
         }
-        
-        self.answersLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(Metrics.left)
-            $0.centerY.equalToSuperview()
-        }
-        
-        self.checkBox.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(Metrics.right)
-            $0.centerY.equalToSuperview()
-            $0.size.equalTo(Metrics.checkBoxSize)
-            $0.leading.equalTo(self.answersLabel.snp.trailing).offset(Metrics.checkBoxLeft)
-        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.layer.cornerRadius = floor(self.height / 4)
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.disposeBag = DisposeBag()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        self.layer.cornerRadius = floor(self.height / 4)
+        
+        self.checkBox.sizeToFit()
+        self.checkBox.size = .init(width: Metrics.checkBoxSize, height: Metrics.checkBoxSize)
+        self.checkBox.right = self.bounds.right - Metrics.right
+        self.checkBox.centerY = self.bounds.centerY
+        
+        self.answersLabel.sizeToFit()
+        self.answersLabel.left = self.bounds.left + Metrics.left
+        self.answersLabel.centerY = self.bounds.centerY
+        self.answersLabel.width = self.checkBox.left - Metrics.checkBoxLeft
     }
 }
 
 import RxGesture
 import ReactorKit
 
-extension BuildUpChoiceCell: ReactorKit.View, HasDisposeBag {
-    typealias Reactor = BuildUpChoiceCellReactor
+extension UIDocumentAnswerCell: ReactorKit.View, HasDisposeBag {
+    typealias Reactor = UIDocumentAnswerCellReactor
     
     func bind(reactor: Reactor) {
         
         self.rx.tapGestureEnded()
             .subscribe(onNext: { _ in
                 CheckChoice.event.onNext(.setChecked(docId: reactor.currentState.docId, reactor.currentState.choice))
+                // TODO: haptic feedback
             })
             .disposed(by: self.disposeBag)
         
@@ -103,8 +103,8 @@ extension BuildUpChoiceCell: ReactorKit.View, HasDisposeBag {
     }
 }
 
-extension BuildUpChoiceCell {
-    class func size(_ width: CGFloat, _ reactor: BuildUpChoiceCellReactor) -> CGSize {
+extension UIDocumentAnswerCell {
+    class func size(_ width: CGFloat, _ reactor: UIDocumentAnswerCellReactor) -> CGSize {
         let left = Metrics.left
         let right = Metrics.right
         let top = Metrics.top

@@ -32,17 +32,6 @@ class UIQuestionListViewController: BaseViewController {
         }
     })
     
-    private let filterSegmentedControl: BetterSegmentedControl = {
-        let segmentedControl = BetterSegmentedControl(
-            frame: .zero,
-            segments: [],
-            options: [.backgroundColor(ColorName.primary.color),
-                     .indicatorViewBackgroundColor(UIColor.white),
-                      .cornerRadius(Metrics.segmentHeight / 2),
-                     .animationSpringDamping(1.0)])
-        return segmentedControl
-    }()
-    
     private let collectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
@@ -72,17 +61,6 @@ class UIQuestionListViewController: BaseViewController {
         self.collectionView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-    }
-    
-    
-    private func setSegmentControl(filterList: [String]) {
-        let font = FontFamily.NotoSansCJKKR.medium.font(size: 14)
-        self.filterSegmentedControl.segments = LabelSegment.segments(
-            withTitles: filterList,
-            normalFont: font, normalTextColor: UIColor.white,
-            selectedFont: font,
-            selectedTextColor: ColorName.primary.color
-        )
     }
     
     override func setupNavigationBarItems() {
@@ -130,10 +108,8 @@ extension UIQuestionListViewController: ReactorKit.View, HasDisposeBag {
     
     func bind(reactor: Reactor) {
         
-        self.filterSegmentedControl.rx.controlEvent(.valueChanged)
-            .debounce(.milliseconds(100), scheduler: MainScheduler.asyncInstance)
-            .map { Reactor.Action.setFilter(self.filterSegmentedControl.index) }
-            .debug("filter segment selected index: ")
+        self.rx.viewWillAppear
+            .map { _ in Reactor.Action.listenQuestions }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
@@ -142,15 +118,6 @@ extension UIQuestionListViewController: ReactorKit.View, HasDisposeBag {
             .disposed(by: self.disposeBag)
 
         self.collectionView.rx.setDelegate(self)
-            .disposed(by: self.disposeBag)
-        
-        reactor.state.map { $0.filterList }
-            .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] filterList in
-                guard let self = self else { return }
-                self.setSegmentControl(filterList: filterList)
-                reactor.action.onNext(.setFilter(0))
-            })
             .disposed(by: self.disposeBag)
     }
 }

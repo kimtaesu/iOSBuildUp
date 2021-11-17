@@ -9,6 +9,7 @@ import Foundation
 
 struct UserInfo: Codable, CodingDictable {
     let uid: String
+    let lastLoginTimestamp: Date = Date()
     let displayName: String?
     let email: String?
     let phone: String?

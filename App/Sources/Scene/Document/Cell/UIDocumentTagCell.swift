@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import TagListView
 
-class BuildUpTagCell: UICollectionViewCell {
+class UIDocumentTagCell: UICollectionViewCell {
     
     private struct Font {
         static let tag: UIFont = FontFamily.NotoSansCJKKR.regular.font(size: 14)
@@ -50,9 +50,16 @@ class BuildUpTagCell: UICollectionViewCell {
         self.tagListView.removeAllTags()
         self.tagListView.addTags(tags)
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let contentViewBounds = self.contentView.bounds
+        self.tagListView.frame = .init(x: contentViewBounds.left, y: contentViewBounds.top, width: contentViewBounds.width, height: contentViewBounds.height)
+    }
 }
 
-extension BuildUpTagCell {
+extension UIDocumentTagCell {
+    
     class func size(_ width: CGFloat, tags: [String]) -> CGSize {
         return .init(width: width, height: 80)
     }

@@ -41,9 +41,10 @@ final class QuestionListItemCellReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .observeAnswer:
-            return self.repository.listenAnswer(subject: self.subject, docId: self.docId)
-                .map(Mutation.setAnswer)
-                .catch { error in return .empty() }
+            return .empty()
+//            return self.repository.listenAnswer(subject: self.subject, docId: self.docId)
+//                .map(Mutation.setAnswer)
+//                .catch { error in return .empty() }
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {

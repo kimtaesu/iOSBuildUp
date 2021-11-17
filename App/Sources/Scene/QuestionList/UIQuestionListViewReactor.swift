@@ -12,7 +12,7 @@ final class UIQuestionListViewReactor: Reactor {
     let initialState: State
     
     enum Action {
-        case setFilter(Int)
+        case listenQuestions
     }
     enum Mutation {
         case setQuestions([QuestionDocument])
@@ -20,7 +20,6 @@ final class UIQuestionListViewReactor: Reactor {
     }
     
     struct State {
-        let filterList: [String] = QuestionFilterMenu.allCases.map { $0.title }
         var isLoading: Bool = false
         var questionDocuments: [QuestionDocument] = []
         var sections: [QuestionListSection] = []
@@ -40,17 +39,11 @@ final class UIQuestionListViewReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .setFilter(let selectedIndex):
-            guard !self.currentState.isLoading else { return .empty() }
-            
-            guard let selected = self.currentState.filterList[safe: selectedIndex] else { return .empty() }
-            
-            let startLoading: Observable<Mutation> = .just(.setLoading(true))
-            let listenQuestions: Observable<Mutation> = self.repository.listenQuestions(subject: self.subject)
-                .map(Mutation.setQuestions)
-            let endLoading: Observable<Mutation> = .just(.setLoading(false))
-            
-            return Observable.concat(startLoading, listenQuestions, endLoading)
+        case .listenQuestions:
+            return .empty()
+//            let listenQuestions: Observable<Mutation> = self.repository.listenQuestions(subject: self.subject)
+//                .map(Mutation.setQuestions)
+//            return Observable.concat(listenQuestions)
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {

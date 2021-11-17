@@ -38,11 +38,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let reactor = UIQuestionListViewController.Reactor(subject: subject, repository: fireStoreRepository)
             return UIQuestionListViewController(reactor: reactor)
         }
+        
         // MARK: UIBuildUpViewController
-        let buildUpViewScreen: (_ subject: String, _ docId: String?) -> UIBuildUpViewController = { subject, docId in
-            let dependency = UIBuildUpViewReactor.Dependency(subject: subject, docId: docId, firestoreRepository: fireStoreRepository)
-            let reactor = UIBuildUpViewController.Reactor(dependency: dependency)
-            return UIBuildUpViewController(reactor: reactor, questionListViewScreen: questionListViewScreen)
+        let buildUpViewScreen: (_ subject: String?) -> UIViewController = { subject in
+            let reactor = UIDocumentViewController.Reactor(subject: subject, repository: fireStoreRepository)
+            return UIDocumentViewController(reactor: reactor)
         }
         
         // MARK: SplashViewController
@@ -50,15 +50,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let reactor = MainViewContoller.Reactor(repository: fireStoreRepository)
             
             // MARK: MainViewController
-            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: buildUpViewScreen))
+//            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: buildUpViewScreen))
             
-            window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
+//            window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
 
 //                let data = MainCardModel(collectionId: "Swift", title: "Swift", thumbnail: nil)
 //        window.rootViewController = UINavigationController(rootViewController: questionListViewScreen(data))
         
-        window.rootViewController = UINavigationController(rootViewController: questionListViewScreen("Swift"))
+        
+        window.rootViewController = UINavigationController(rootViewController: buildUpViewScreen(nil))
 //        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white

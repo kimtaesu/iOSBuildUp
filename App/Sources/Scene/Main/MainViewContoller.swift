@@ -46,11 +46,11 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
         return button
     }()
     
-    private let buildUpViewScreen: (_ subject: String, _ docId: String?) -> UIBuildUpViewController
+    private let buildUpViewScreen: (_ subject: String, _ docId: String?) -> UIViewController
     
     init(
         reactor: Reactor,
-        buildUpViewScreen: @escaping (_ subject: String, _ docId: String?) -> UIBuildUpViewController
+        buildUpViewScreen: @escaping (_ subject: String, _ docId: String?) -> UIViewController
     ) {
         defer { self.reactor = reactor }
         self.buildUpViewScreen = buildUpViewScreen

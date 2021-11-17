@@ -11,6 +11,18 @@ import FirebaseAuth
 import FirebaseFirestore
 import Accelerate
 
+struct QuestionPagination: Equatable {
+    let docIds: [String]
+    let nextPosition: Int
+    var totalCount: Int {
+        return self.docIds.count
+    }
+}
+struct QuestionJoinAnswer {
+    let question: QuestionDocument
+    let answer: QuestionAnswer?
+}
+
 struct MyQuestionCount {
     let answerCount: Int
     let totalCount: Int
@@ -20,10 +32,9 @@ class FirestoreRepository {
     
     enum CollectionName: String {
         case buildUp = "build_up"
-        case questions = "questions"
-        case answers = "answers"
-        case users = "users"
-        case tags = "tags"
+        case answers
+        case users
+        case subjects
     }
     
     private let authService: AuthServiceType
@@ -61,20 +72,6 @@ class FirestoreRepository {
             }
     }
     
-    func listenAnswer(subject: String, docId: String) -> Observable<QuestionAnswer> {
-        return self.authService.getUserIfNeedAnonymously()
-            .flatMapLatest { user in
-                Firestore.firestore().collection(CollectionName.users.rawValue)
-                    .document(user.uid)
-                    .collection(CollectionName.answers.rawValue)
-                    .document(docId)
-                    .rx
-                    .listen()
-                    .map(QuestionAnswer.self)
-                    .debug()
-            }
-    }
-    
     func answer(docId: String, choice: CheckChoice) -> Observable<Bool> {
         return self.authService.getUserIfNeedAnonymously()
             .flatMap { user -> Observable<Bool> in
@@ -109,6 +106,42 @@ class FirestoreRepository {
 //            }
         return .empty()
     }
+    
+    func listenQuestionPagination(subject: String?) -> Observable<QuestionPagination> {
+        return self.authService.getUserIfNeedAnonymously()
+            .flatMapLatest { user -> Observable<QuestionPagination> in
+                let query: Query = {
+                    if let subject = subject {
+                        return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
+                            .whereField("subject", isEqualTo: subject)
+                    } else {
+                        return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
+                    }
+                }()
+                
+                return query
+                    .rx
+                    .listen()
+                    .flatMapLatest { questions -> Observable<QuestionPagination> in
+                        let questionIds = questions.documents.map { $0.documentID }
+                        return Firestore.firestore().collection(CollectionName.users.rawValue)
+                            .document(user.uid)
+                            .collection(CollectionName.answers.rawValue)
+                            .rx
+                            .listen()
+                            .map {
+                                let answerIds = $0.documents.map { $0.documentID }
+                                let nextPosition = min(answerIds.count + 1, questionIds.count)
+                                
+                                return QuestionPagination(
+                                    docIds: questionIds.reorder(by: answerIds),
+                                    nextPosition: nextPosition
+                                )
+                            }
+                    }
+            }
+            .debug()
+    }
     func getMyAnswers() -> Observable<[QuestionAnswer]> {
         self.authService.getUserIfNeedAnonymously()
             .flatMap { user in
@@ -124,20 +157,6 @@ class FirestoreRepository {
                     }
             }
     }
-    
-    func listenQuestions(subject: String) -> Observable<[QuestionDocument]> {
-        self.authService.getUserIfNeedAnonymously()
-            .flatMap { user -> Observable<[QuestionDocument]> in
-                return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
-                    .document(subject)
-                    .collection(CollectionName.questions.rawValue)
-                    .rx
-                    .listen()
-                    .mapMany(QuestionDocument.self)
-                    .debug()
-            }
-    }
-    
     func listenSubjects() -> Observable<[BuildUpSubject]> {
         return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
             .rx
@@ -149,54 +168,43 @@ class FirestoreRepository {
             }
     }
     
-    func listenQuestion(subject: String, docId: String) -> Observable<QuestionDocument> {
-        return Firestore.firestore().collection(CollectionName.buildUp.rawValue)
-            .document(subject)
-            .collection(CollectionName.questions.rawValue)
-            .document(docId)
-            .rx
-            .listen()
-            .map(QuestionDocument.self)
-    }
-    
-    func listenQuestion(subject: String) -> Observable<QuestionDocument> {
-        self.nextQuestionId(subject: subject)
-        // TODO:
-            .flatMap { nextDocId in
+    func listenQuestion(docId: String) -> Observable<QuestionJoinAnswer> {
+        self.authService.getUserIfNeedAnonymously()
+            .flatMapLatest { user in
                 Firestore.firestore().collection(CollectionName.buildUp.rawValue)
-                    .document(subject)
-                    .collection(CollectionName.questions.rawValue)
-                    .document(nextDocId!)
+                    .document(docId)
                     .rx
                     .listen()
                     .map(QuestionDocument.self)
+                    .flatMapLatest { question in
+                        Firestore.firestore().collection(CollectionName.users.rawValue)
+                            .document(user.uid)
+                            .collection(CollectionName.answers.rawValue)
+                            .document(docId)
+                            .rx
+                            .listen()
+                            .mapOptional(QuestionAnswer.self)
+                            .map { answer in
+                                QuestionJoinAnswer(question: question, answer: answer)
+                            }
+                    }
             }
-    }
-    
-    func nextQuestionId(subject: String) -> Observable<String?> {
-        self.authService.getUserIfNeedAnonymously()
-            .flatMapLatest { user in
-                
-                Firestore.firestore().collection(CollectionName.users.rawValue)
-                    .document(user.uid)
-                    .collection(CollectionName.answers.rawValue)
-                    .rx
-                    .getDocuments()
-                    .map { $0.documents.map { $0.documentID } }
-            }
-            .flatMap { answerIds in
-                Firestore.firestore().collection(CollectionName.buildUp.rawValue)
-                    .document(subject)
-                    .collection(CollectionName.questions.rawValue)
-                    .whereField("docId", notIn: answerIds)
-                    .rx
-                    .getDocuments()
-                    .map { $0.documents.first?.documentID }
-            }
+            .debug()
+        
     }
 }
 
 extension Observable where Element == DocumentSnapshot {
+    func mapOptional<T>(_ type: T.Type) -> Observable<T?> where T: Decodable {
+        return self.flatMap { doc -> Observable<T?> in
+            guard let data = doc.data() else {
+                return .just(nil)
+            }
+            let object = try data.asObject(type: type)
+            return .just(object)
+        }
+    }
+    
     func map<T>(_ type: T.Type) -> Observable<T> where T: Decodable {
         return self.flatMap { doc -> Observable<T> in
             guard let data = doc.data() else {

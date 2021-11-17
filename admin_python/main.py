@@ -13,7 +13,7 @@ def update_subjects(data):
     title = data['title']
     thumbnail = data['thumbnail']
 
-    doc_ref = db.collection(build_up_collection_name).document(subject)
+    doc_ref = db.collection("subjects").document(subject)
 
     doc_ref.set({
         'subject': subject,
@@ -36,8 +36,9 @@ def update_question(subject, sdata):
     docId = hash_key.hexdigest()
 
     db.collection(subject).document(docId)
-    doc_ref = db.collection(build_up_collection_name).document(subject).collection('questions').document(docId)
+    doc_ref = db.collection(build_up_collection_name).document(docId)
     doc_ref.set({
+        'subject': subject,
         'docId': docId,
         'question': question,
         'choices': choices,

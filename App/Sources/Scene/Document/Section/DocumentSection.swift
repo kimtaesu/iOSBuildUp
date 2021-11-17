@@ -7,15 +7,15 @@
 
 import RxDataSources
 
-enum BuildUpSection {
-    case questions([BuildUpSection.Item])
-    case answers([BuildUpSection.Item])
-    case like(BuildUpSection.Item)
-    case tag(BuildUpSection.Item)
+enum DocumentSection {
+    case questions([DocumentSection.Item])
+    case answers([DocumentSection.Item])
+    case like(DocumentSection.Item)
+    case tag(DocumentSection.Item)
 }
 
-extension BuildUpSection: SectionModelType {
-    public typealias Item = BuildUpSectionItem
+extension DocumentSection: SectionModelType {
+    public typealias Item = DocumentSectionItem
 
     var items: [Item] {
       switch self {
@@ -29,7 +29,7 @@ extension BuildUpSection: SectionModelType {
           return items
       }
     }
-    public init(original: BuildUpSection, items: [Item]) {
+    public init(original: DocumentSection, items: [Item]) {
         switch original {
         case .like(let item):
             self = .like(item)
@@ -43,9 +43,9 @@ extension BuildUpSection: SectionModelType {
     }
 }
 
-enum BuildUpSectionItem {
+enum DocumentSectionItem {
     case question(AttributeQuestion)
     case tags([String])
-    case like(BuildUpLikeCellReactor)
-    case checkChioce(BuildUpChoiceCellReactor)
+    case like(UIDocumentLikeCellReactor)
+    case checkChioce(UIDocumentAnswerCellReactor)
 }

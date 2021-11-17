@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension UIBuildUpViewController {
+extension UIDocumentViewController {
     public func contactDocument(
         _ email: String,
         doc: QuestionDocument

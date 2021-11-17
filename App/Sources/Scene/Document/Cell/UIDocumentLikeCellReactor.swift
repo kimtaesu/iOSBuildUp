@@ -7,7 +7,7 @@
 
 import ReactorKit
 
-final class BuildUpLikeCellReactor: Reactor {
+final class UIDocumentLikeCellReactor: Reactor {
     
     let initialState: State
     

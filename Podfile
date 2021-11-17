@@ -40,6 +40,7 @@ target 'App' do
   pod 'Kingfisher'
   pod 'DropDown'
   pod 'BetterSegmentedControl', '~> 2.0'
+  pod 'MSPeekCollectionViewDelegateImplementation'
   
   # Firebase
   pod 'Firebase/Analytics'

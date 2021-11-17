@@ -16,12 +16,11 @@ extension CheckChoice {
     static let event = PublishSubject<Event>()
 }
 
-final class BuildUpChoiceCellReactor: Reactor {
+final class UIDocumentAnswerCellReactor: Reactor {
     
     let initialState: State
     
     enum Action {
-        case touchCell
     }
     enum Mutation {
         case setChecked(Bool)
@@ -36,8 +35,8 @@ final class BuildUpChoiceCellReactor: Reactor {
         var isChecked: Bool = false
     }
     
-    init(docId: String, choice: CheckChoice) {
-        self.initialState = State(docId: docId, choice: choice)
+    init(docId: String, choice: CheckChoice, isChecked: Bool = false) {
+        self.initialState = State(docId: docId, choice: choice, isChecked: isChecked)
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
@@ -59,13 +58,6 @@ final class BuildUpChoiceCellReactor: Reactor {
                 }
         }
         return Observable.of(mutation, fromCheckCoiceEvent).merge()
-    }
-    
-    func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-        case .touchCell:
-            return .just(Mutation.setChecked(!self.currentState.isChecked))
-        }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
