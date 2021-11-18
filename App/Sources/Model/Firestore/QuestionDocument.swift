@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct QuestionDocument: Codable, Equatable, CodingDictable {
+struct QuestionDocument: Codable, Equatable, CodingDictable, HasDocumentId {
     let docId: String
-    let question: AttributeQuestion
+    let question: DocumentAttrQuestion
     let choices: [CheckChoice]
     let tags: [String]
 }

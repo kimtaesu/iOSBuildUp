@@ -7,13 +7,9 @@
 
 import Foundation
 import UIKit
-import Firebase
-import FirebaseFirestore
-import FirebaseAuth
 import ReusableKit
 import RxDataSources
 import DropDown
-import MSPeekCollectionViewDelegateImplementation
 
 class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     
@@ -28,18 +24,9 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     private var sections: [DocumentPaginationSection] = [] {
         didSet {
             self.collectionView.dataSource = self
-            self.collectionView.configureForPeekingBehavior(behavior: self.behavior)
             self.collectionView.reloadData()
         }
     }
-    
-    private let behavior: MSCollectionViewPeekingBehavior = {
-        let behavior = MSCollectionViewPeekingBehavior()
-        behavior.cellPeekWidth = 0
-        behavior.scrollDirection = .horizontal
-        behavior.cellSpacing = 0
-        return behavior
-    }()
     
     private let collectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -52,6 +39,7 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.bounces = false
+        collectionView.isScrollEnabled = false
         return collectionView
     }()
     
@@ -66,7 +54,9 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     
     let dropDown = DropDown()
 
-    init(reactor: Reactor) {
+    init(
+        reactor: Reactor
+    ) {
         defer { self.reactor = reactor }
         super.init()
     }
@@ -113,6 +103,7 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     }
 }
 
+// MARK: DropDown Menu Actions
 @objc extension UIDocumentViewController {
     @objc func more() {
         self.showDropDownMenu()
@@ -123,24 +114,26 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     }
     
     private func showDropDownMenu() {
-        let dataSources: [String] = BuilUpMoreDropDownMenu.allCases.map { $0.title }
+        let dataSources: [String] = DocumentMoreDropDownMenu.allCases.map { $0.title }
         self.showDropDown(
             dataSources: dataSources,
             anchorView: self.rightMenuBarButton.plainView,
-            configIcon: { BuilUpMoreDropDownMenu.firstItem(title: $0)?.icon },
+            configIcon: { DocumentMoreDropDownMenu.firstItem(title: $0)?.icon },
             didSelected: { [weak self] selected in
                 guard let self = self else { return }
-                guard let found = BuilUpMoreDropDownMenu.firstItem(title: selected) else { return }
+                guard let found = DocumentMoreDropDownMenu.firstItem(title: selected) else { return }
                 switch found {
                 case .allQuestions:
-//                    let presentViewController = UINavigationController(rootViewController: self.questionListViewScreen(subject))
-//                    presentViewController.modalPresentationStyle = .custom
-//                    self.present(presentViewController, animated: true)
-                    break
+                    guard let docListReactor = self.reactor?.createDocumentListReactor() else { return }
+                    let docListViewController = UIQuestionListViewController(reactor: docListReactor, didSelectedAt: {
+                        self.reactor?.action.onNext(.setCurrentPage($0.item))
+                    })
+                    let presentViewController = UINavigationController(rootViewController: docListViewController)
+                    presentViewController.modalPresentationStyle = .custom
+                    self.present(presentViewController, animated: true)
                 case .contact:
-//                    guard let question = self.reactor?.currentState.question else { return }
-//                    self.contactDocument(RemoteConfigStore.shared.contactEmail, doc: question.question)
-                    break
+                    guard let document = self.reactor?.currentState.currentDocument else { return }
+                    self.contactDocument(RemoteConfigStore.shared.contactEmail, document: document)
                 }
             }
         )
@@ -148,9 +141,10 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
 }
 
 extension UIDocumentViewController: UICollectionViewDelegateFlowLayout {
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        self.behavior.scrollViewWillEndDragging(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let sectionWidth = collectionView.sectionWidth(at: indexPath.section)
+        let sectionHeight = collectionView.sectionHeight(at: indexPath.section)
+        return .init(width: sectionWidth, height: sectionHeight)
     }
 }
 
@@ -175,32 +169,49 @@ extension UIDocumentViewController: UICollectionViewDataSource {
 }
 
 import ReactorKit
+import Toaster
 
 extension UIDocumentViewController: ReactorKit.View, HasDisposeBag {
     typealias Reactor = UIDocumentViewReactor
     
     func bind(reactor: Reactor) {
-        self.rx.viewWillAppear
+        self.rx.viewDidLoad
             .map { _ in Reactor.Action.listenQuestions }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
+        // TODO: haptic feedback
         self.submitButton.rx.tap
             .map { _ in Reactor.Action.tapSubmit }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag) 
+        
+        reactor.state.map { $0.navigationTitle }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] title in
+                guard let self = self else { return }
+                self.centerTitle = title
+            })
+            .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.sections }
             .filterEmpty()
             .subscribe(onNext: { [weak self] sections in
                 guard let self = self else { return }
                 self.sections = sections
+                
+//                self.collectionView.scrollToItem(
+//                    at: .init(item: reactor.currentState.currentPage, section: 0),
+//                    at: .left,
+//                    animated: false)
             })
             .disposed(by: self.disposeBag)
         
-        reactor.state.map { $0.isCorrect }
-            .distinctUntilChanged()
-            .subscribe()
+        reactor.state.map { $0.toast }
+            .filterNil()
+            .subscribe(onNext: { toast in
+                Toast.init(text: toast).show()
+            })
             .disposed(by: self.disposeBag)
     }
 }

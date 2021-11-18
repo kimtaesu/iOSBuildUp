@@ -44,7 +44,7 @@ extension DocumentSection: SectionModelType {
 }
 
 enum DocumentSectionItem {
-    case question(AttributeQuestion)
+    case question(DocumentAttrQuestion)
     case tags([String])
     case like(UIDocumentLikeCellReactor)
     case checkChioce(UIDocumentAnswerCellReactor)

@@ -33,12 +33,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
         
-        // MARK: QuestionListViewController
-        let questionListViewScreen: ((_ subject: String) -> UIQuestionListViewController)! = { subject in
-            let reactor = UIQuestionListViewController.Reactor(subject: subject, repository: fireStoreRepository)
-            return UIQuestionListViewController(reactor: reactor)
-        }
-        
         // MARK: UIBuildUpViewController
         let buildUpViewScreen: (_ subject: String?) -> UIViewController = { subject in
             let reactor = UIDocumentViewController.Reactor(subject: subject, repository: fireStoreRepository)
@@ -50,17 +44,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let reactor = MainViewContoller.Reactor(repository: fireStoreRepository)
             
             // MARK: MainViewController
-//            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: buildUpViewScreen))
+            let viewController = UINavigationController(rootViewController: MainViewContoller(reactor: reactor, buildUpViewScreen: buildUpViewScreen))
             
-//            window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
+            window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
 
-//                let data = MainCardModel(collectionId: "Swift", title: "Swift", thumbnail: nil)
-//        window.rootViewController = UINavigationController(rootViewController: questionListViewScreen(data))
         
-        
-        window.rootViewController = UINavigationController(rootViewController: buildUpViewScreen(nil))
-//        window.rootViewController = splashViewController
+//        window.rootViewController = UINavigationController(rootViewController: buildUpViewScreen(nil))
+        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white
         self.window = window

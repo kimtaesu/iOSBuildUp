@@ -42,8 +42,11 @@ class UIQuestionListViewController: BaseViewController {
         return collectionView
     }()
     
-    init(reactor: Reactor) {
+    private let didSelectedAt: (IndexPath) -> Void
+    
+    init(reactor: Reactor, didSelectedAt: @escaping (IndexPath) -> Void) {
         defer { self.reactor = reactor }
+        self.didSelectedAt = didSelectedAt
         super.init()
     }
     
@@ -108,9 +111,13 @@ extension UIQuestionListViewController: ReactorKit.View, HasDisposeBag {
     
     func bind(reactor: Reactor) {
         
-        self.rx.viewWillAppear
-            .map { _ in Reactor.Action.listenQuestions }
-            .bind(to: reactor.action)
+        self.collectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                self.dismiss(animated: true) {
+                    self.didSelectedAt(indexPath)
+                }
+            })
             .disposed(by: self.disposeBag)
         
         reactor.state.map { $0.sections }

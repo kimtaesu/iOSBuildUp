@@ -12,41 +12,36 @@ final class SubjectCardCellReactor: Reactor {
     let initialState: State
     
     enum Action {
-        case getCompletedCount
+        case listenDocument
     }
     enum Mutation {
-        case setCompletedCount(MyQuestionCount)
+        case setDocuments(QuestionPagination)
     }
     
     struct State {
-        let item: BuildUpSubject
-        
-        var completedCount: MyQuestionCount?
-        
-        var buildUpCount: String {
-            return "\(self.completedCount?.answerCount)/\(self.completedCount?.totalCount)"
-        }
+        let item: DocumentSubject
+        var documents: QuestionPagination?
     }
     
     private let repository: FirestoreRepository
     
-    init(item: BuildUpSubject, repository: FirestoreRepository) {
+    init(item: DocumentSubject, repository: FirestoreRepository) {
         self.repository = repository
         self.initialState = State(item: item)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .getCompletedCount:
-            return self.repository.getMyCompletedCount(subject: self.currentState.item.subject)
-                .map(Mutation.setCompletedCount)
+        case .listenDocument:
+            return self.repository.listenQuestionPagination(subject: self.currentState.item.subject)
+                .map(Mutation.setDocuments)
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
         switch mutation {
-        case .setCompletedCount(let count):
-            state.completedCount = count
+        case .setDocuments(let documnets):
+            state.documents = documnets
         }
         return state
     }

@@ -10,10 +10,10 @@ import UIKit
 extension UIDocumentViewController {
     public func contactDocument(
         _ email: String,
-        doc: QuestionDocument
+        document: QuestionJoinAnswer
     ) {
-        let subject: String = doc.asSubjectMail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let body: String = doc.asBodyMail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let subject: String = document.asSubjectMail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let body: String = document.asBodyMail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let mailToUrl: URL? = URL(string: "mailto:\(email)?subject=\(subject)&body=\(body)")
         
         guard let url = mailToUrl,
@@ -27,12 +27,12 @@ extension UIDocumentViewController {
     }
 }
 
-extension QuestionDocument {
+private extension QuestionJoinAnswer {
     var asSubjectMail: String {
         "\(self.docId) 오탈자 및 문의드립니다."
     }
     
     var asBodyMail: String {
-        "안녕하세요! \(self.docId) \(self.question.text) 오탈자 및 문의드립니다."
+        "안녕하세요! \(self.docId) \(self.question.question.text) 오탈자 및 문의드립니다."
     }
 }

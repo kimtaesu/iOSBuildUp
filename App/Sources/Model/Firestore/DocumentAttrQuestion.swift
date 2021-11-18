@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct AttributeQuestion: Codable, Equatable {
+struct DocumentAttrQuestion: Codable, Equatable {
     let text: String
 }

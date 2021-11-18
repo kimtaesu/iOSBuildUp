@@ -7,12 +7,12 @@
 
 import UIKit
 
-enum AuthProvider: String, CaseIterable {
+enum AuthProviderType: String, CaseIterable {
     case google
 }
 
-extension AuthProvider {
-    static func create(provider: String?) -> AuthProvider? {
+extension AuthProviderType {
+    static func create(provider: String?) -> AuthProviderType? {
         guard let provider = provider,
               provider.isNotEmpty else { return nil} 
         return Self.allCases.first { $0.provider == provider }

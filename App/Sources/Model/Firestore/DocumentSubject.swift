@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BuildUpSubject: Codable, CodingDictable, Equatable {
+struct DocumentSubject: Codable, CodingDictable, Equatable {
     let subject: String
     let title: String
     let subtitle: String

@@ -36,7 +36,6 @@ class UIDocumentCell: UICollectionViewCell {
         return collectionView
     }()
     
-    
     private lazy var dataSource: RxCollectionViewSectionedReloadDataSource<DocumentSection> = RxCollectionViewSectionedReloadDataSource(configureCell: { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case .question(let q):

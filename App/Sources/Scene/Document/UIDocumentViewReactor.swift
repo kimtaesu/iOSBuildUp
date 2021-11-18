@@ -12,6 +12,7 @@ final class UIDocumentViewReactor: Reactor {
     let initialState: State
     
     enum Action {
+        case setCurrentPage(Int)
         case listenQuestions
         case tapSubmit
     }
@@ -19,74 +20,65 @@ final class UIDocumentViewReactor: Reactor {
     enum Mutation {
         case setLoading(Bool)
         case setQuestionPagination(QuestionPagination)
-        case setChoiceSelected(CheckChoice)
         case setCorrect(Bool)
+        case setCurrentPage(Int)
     }
     
     struct State {
+        var toast: String?
+        
+        let subject: String?
         var sections: [DocumentPaginationSection] = []
+        var documents: [QuestionJoinAnswer] = []
+        
         var isLoading: Bool = false
-        var selectedChoice: CheckChoice?
-        var isCorrect: Bool?
-        var totalCount: Int = 0
-        var currentPosition: Int = 0
+        var currentPage: Int = 0
     }
     
     private let firestoreRepository: FirestoreRepository
-    private let subject: String?
     
     init(subject: String?, repository: FirestoreRepository) {
-        self.subject = subject
         self.firestoreRepository = repository
-        self.initialState = State()
+        self.initialState = State(subject: subject)
     }
-    
-//    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-//        let fromCheckCoiceEvent: Observable<Mutation> = CheckChoice.event
-//            .filter { [weak self] event in
-//                switch event {
-//                case let .setChecked(docId, _):
-//                    return self?.docId == docId
-//                }
-//            }
-//            .flatMap { event -> Observable<Mutation> in
-//                switch event {
-//                case let .setChecked(_, choice):
-//                    return .just(.setChoiceSelected(choice))
-//                }
-//        }
-//        return Observable.of(mutation, fromCheckCoiceEvent).merge()
-//    }
-    
+
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .setCurrentPage(let page):
+            return .just(.setCurrentPage(page))
         case .listenQuestions:
-            return self.firestoreRepository.listenQuestionPagination(subject: self.subject)
+            return self.firestoreRepository.listenQuestionPagination(subject: self.currentState.subject)
                 .map(Mutation.setQuestionPagination)
         case .tapSubmit:
-//            guard let selectedChoice = self.currentState.selectedChoice else { return .empty() }
-//            guard let question = self.currentState.question else { return .empty() }
-//
-//            let isCorrect = selectedChoice.isCorrect
-//            return self.firestoreRepository.answer(docId: question.question.docId, choice: selectedChoice)
-//                .map { _ in Mutation.setCorrect(isCorrect) }
-            return .empty()
+            guard let item = self.currentState.sections[safe: 0]?.items[self.currentState.currentPage] else { return .empty() }
+            switch item {
+            case .document(let reactor):
+                guard let currentAnswer = reactor.currentState.selcetedAnswer else { return .empty() }
+                return self.firestoreRepository.answer(docId: reactor.currentState.data.docId, choice: currentAnswer)
+                    .map(Mutation.setCorrect)
+            }
         }
     }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
-        state.isCorrect = nil
+        state.toast = nil
         switch mutation {
-        case .setChoiceSelected(let selected):
-            state.selectedChoice = selected
+        case .setCurrentPage(let page):
+            state.currentPage = page
+            return state
         case .setLoading(let isLoading):
             state.isLoading = isLoading
         case .setQuestionPagination(let pagination):
-            state.totalCount = pagination.totalCount
-            state.currentPosition = pagination.nextPosition
+            state.documents = pagination.questionAnswers
+            state.currentPage = pagination.answerCount
             state.sections = self.makeSections(pagination: pagination)
         case .setCorrect(let isCorrect):
-            state.isCorrect = isCorrect
+            if isCorrect {
+                state.toast = "정답입니다."
+            } else {
+                state.toast = "오답입니다."
+            }
         }
         return state
     }
@@ -94,9 +86,28 @@ final class UIDocumentViewReactor: Reactor {
 
 extension UIDocumentViewReactor {
     func makeSections(pagination: QuestionPagination) -> [DocumentPaginationSection] {
-        let sectionItems = pagination.docIds
-            .map { UIDocumentCellReactor(docId: $0, repository: self.firestoreRepository) }
+        let sectionItems = pagination.questionAnswers
+            .map { UIDocumentCellReactor(data: $0, repository: self.firestoreRepository) }
             .map(DocumentPaginationSection.Item.document)
         return [.documents(sectionItems)]
+    }
+    
+    func createDocumentListReactor() -> UIQuestionListViewReactor {
+        return .init(documents: self.currentState.documents)
+    }
+}
+
+extension UIDocumentViewReactor.State {
+    var navigationTitle: String {
+        let title = self.subject ?? "모든 문제"
+        guard self.totalCount > 0 else { return "" }
+        let page = "(\(self.currentPage + 1) / \(self.totalCount))"
+        return title + " " + page
+    }
+    var totalCount: Int {
+        self.documents.count
+    }
+    var currentDocument: QuestionJoinAnswer? {
+        self.documents[safe: self.currentPage]
     }
 }

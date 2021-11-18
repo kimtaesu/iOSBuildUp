@@ -91,7 +91,7 @@ extension SubjectCardCell: ReactorKit.View, HasDisposeBag {
     func bind(reactor: Reactor) {
         
         Observable.just(true)
-            .map { _ in Reactor.Action.getCompletedCount }
+            .map { _ in Reactor.Action.listenDocument }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
@@ -102,14 +102,9 @@ extension SubjectCardCell: ReactorKit.View, HasDisposeBag {
                 self.configCell(item)
             })
             .disposed(by: self.disposeBag)
-        
-        reactor.state.map { $0.buildUpCount }
-            .distinctUntilChanged()
-            .bind(to: self.buildUpCountLabel.rx.text)
-            .disposed(by: self.disposeBag)
     }
     
-    private func configCell(_ item: BuildUpSubject) {
+    private func configCell(_ item: DocumentSubject) {
         self.titleLabel.text = item.title
         self.thumbnailImageView.kf.indicatorType = .activity
         self.thumbnailImageView.kf.setImage(with: URL(string: item.thumbnail ?? ""))

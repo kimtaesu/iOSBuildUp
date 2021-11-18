@@ -17,31 +17,54 @@ final class UIDocumentCellReactor: Reactor {
     
     enum Mutation {
         case setQuestion(QuestionJoinAnswer)
+        case setSelectedAnswer(CheckChoice)
     }
     
     struct State {
+        var data: QuestionJoinAnswer
         var sections: [DocumentSection] = []
+        var selcetedAnswer: CheckChoice?
     }
     
     private let repository: FirestoreRepository
-    private let docId: String
+    private let data: QuestionJoinAnswer
     
-    init(docId: String, repository: FirestoreRepository) {
-        self.docId = docId
+    init(data: QuestionJoinAnswer, repository: FirestoreRepository) {
+        self.data = data
         self.repository = repository
-        self.initialState = State()
+        self.initialState = State(data: data)
+        
+    }
+    
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let fromCheckCoiceEvent: Observable<Mutation> = CheckChoice.event
+            .filter { [weak self] event in
+                guard let self = self else { return false }
+                switch event {
+                case let .setChecked(docId, _):
+                    return self.data.question.docId == docId
+                }
+            }
+            .map { event in
+                switch event {
+                case let .setChecked(_, choice):
+                    return .setSelectedAnswer(choice)
+                }
+        }
+        return Observable.of(mutation, fromCheckCoiceEvent).merge()
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .listen:
-            return self.repository.listenQuestion(docId: self.docId)
-                .map(Mutation.setQuestion)
+            return .just(.setQuestion(self.currentState.data))
         }
     }
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
         switch mutation {
+        case .setSelectedAnswer(let answer):
+            state.selcetedAnswer = answer
         case .setQuestion(let document):
             state.sections = self.makeSections(document: document)
         }
@@ -49,22 +72,21 @@ final class UIDocumentCellReactor: Reactor {
     }
 }
 
-
 extension UIDocumentCellReactor {
     func makeSections(document: QuestionJoinAnswer) -> [DocumentSection] {
-        let question = document.question
-        let answer = document.answer
+        let serverQuestion = document.question
+        let serverAnswer = document.answer
         
-        let choiceSectionItems = question.choices
+        let choiceSectionItems = serverQuestion.choices
             .map { choice in
-                let isChecked = (choice.answer == answer?.answer) == true
-                return UIDocumentAnswerCellReactor(docId: question.docId, choice: choice, isChecked: isChecked)
+                let isChecked = (choice.answer == serverAnswer?.answer) == true
+                return UIDocumentAnswerCellReactor(docId: serverQuestion.docId, choice: choice, isChecked: isChecked)
             }
             .map(DocumentSectionItem.checkChioce)
         
         return [
-            .questions([.question(question.question)]),
-            .tag(.tags(question.tags)),
+            .questions([.question(serverQuestion.question)]),
+            .tag(.tags(serverQuestion.tags)),
             .answers(choiceSectionItems)
         ]
     }

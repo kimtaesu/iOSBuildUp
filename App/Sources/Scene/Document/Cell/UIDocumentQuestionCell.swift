@@ -34,7 +34,7 @@ class UIDocumentQuestionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configCell(_ question: AttributeQuestion) {
+    func configCell(_ question: DocumentAttrQuestion) {
         self.questionLabel.text = question.text
     }
     
@@ -48,7 +48,7 @@ class UIDocumentQuestionCell: UICollectionViewCell {
 
 extension UIDocumentQuestionCell {
     
-    class func size(_ width: CGFloat, question: AttributeQuestion) -> CGSize {
+    class func size(_ width: CGFloat, question: DocumentAttrQuestion) -> CGSize {
         let height = snap(question.text.height(thatFitsWidth: width, font: Font.question, maximumNumberOfLines: 0))
         return .init(width: width, height: height)
     }

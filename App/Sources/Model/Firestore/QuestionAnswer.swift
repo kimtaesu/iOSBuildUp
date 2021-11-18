@@ -8,7 +8,7 @@
 import Foundation
 import SwiftDictionaryCoding
 
-struct QuestionAnswer: Codable, CodingDictable, Equatable {
+struct QuestionAnswer: Codable, CodingDictable, Equatable, HasDocumentId {
     let docId: String
     let timestamp: Date
     let answer: String

@@ -17,12 +17,11 @@ final class MainViewReactor: Reactor {
         case listenSubjects
         case listenUserState
         
-        case refresh
         case signIn(AuthCredential)
         case signOut
     }
     enum Mutation {
-        case setSubjects([BuildUpSubject])
+        case setSubjects([DocumentSubject])
         case setRefreshing(Bool)
         case setUser(User?)
         case setSignInError(Error)
@@ -33,7 +32,7 @@ final class MainViewReactor: Reactor {
         var user: User?
         var sections: [MainViewSection] = []
         var signInError: Error?
-        var subjects: [BuildUpSubject] = []
+        var subjects: [DocumentSubject] = []
     }
     
     private let repository: FirestoreRepository
@@ -53,21 +52,6 @@ final class MainViewReactor: Reactor {
         case .listenUserState:
             return self.repository.userStateDidChange()
                 .map(Mutation.setUser)
-            
-        case .refresh:
-//            guard !self.currentState.isRefreshing else { return .empty() }
-//            let startRefreshing: Observable<Mutation> = .just(.setRefreshing(true))
-//            let endRefreshing: Observable<Mutation> = .just(.setRefreshing(false))
-//            let fetchAllTags = self.repository.getAllSubjects()
-//                .map(Mutation.setCardItems)
-//                .catch { error in
-//                    logger.error(error)
-//                    // TODO: handle error
-//                    return .empty()
-//                }
-//            return Observable.concat(startRefreshing, fetchAllTags, endRefreshing)
-            return .empty()
-            
         case .signOut:
             return self.repository.signOut()
                 .map { Mutation.setUser(nil) }
@@ -106,10 +90,10 @@ extension MainViewReactor.State {
     var userPhotoURL: URL? {
         return self.user?.photoURL
     }
-    var authProvider: AuthProvider? {
+    var authProvider: AuthProviderType? {
         
         let providerID = self.user?.providerData.first?.providerID
-        return AuthProvider.create(provider: providerID)
+        return AuthProviderType.create(provider: providerID)
     }
     
     var isLoggined: Bool {

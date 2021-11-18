@@ -14,9 +14,22 @@ class BaseViewController: UIViewController {
     var centerTitle: String? {
         didSet {
             guard let centerTitle = centerTitle, centerTitle.isNotEmpty else { return }
-            self.adjustCenterTitle(centerTitle)
+            self.centerTitleLabel.text = centerTitle
+            self.centerTitleLabel.sizeToFit()
+            
+            if self.centerTitleLabel.superview == nil {
+                self.navigationItem.titleView = self.centerTitleLabel
+            }
         }
     }
+    
+    private let centerTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = FontFamily.NotoSansCJKKR.medium.font(size: 18)
+        label.textColor = .black
+        label.textAlignment = .center
+        return label
+    }()
     
     open var backImageSize: CGSize {
         return .init(width: 30, height: 30)
@@ -35,18 +48,6 @@ class BaseViewController: UIViewController {
         return type(of: self).description().components(separatedBy: ".").last ?? ""
     }()
 
-    private func adjustCenterTitle(_ title: String) {
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 44, height: 44))
-        label.font = FontFamily.NotoSansCJKKR.medium.font(size: 16)
-
-        label.text = title
-        label.textColor = .black
-        label.sizeToFit()
-        label.textAlignment = .center
-        self.navigationItem.titleView = label
-    }
-    
-    
     // MARK: Initializing
     init() {
       super.init(nibName: nil, bundle: nil)

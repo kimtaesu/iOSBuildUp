@@ -85,35 +85,18 @@ extension QuestionListItemCell: ReactorKit.View, HasDisposeBag {
     typealias Reactor = QuestionListItemCellReactor
     
     func bind(reactor: Reactor) {
-        Observable.just(true)
-            .map { _ in Reactor.Action.observeAnswer }
-            .bind(to: reactor.action)
-            .disposed(by: self.disposeBag)
 
         reactor.state.map { $0.doc }
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] doc in
                 guard let self = self else { return }
-                self.configCell(question: doc)
-            })
-            .disposed(by: self.disposeBag)
-        
-        reactor.state.map { $0.answer }
-            .distinctUntilChanged()
-            .filterNil()
-            .subscribe(onNext: { [weak self] answer in
-                guard let self = self else { return }
-                self.configCell(answer: answer)
+                self.configCell(doc)
             })
             .disposed(by: self.disposeBag)
     }
     
-    private func configCell(question: QuestionDocument) {
-        self.questionLabel.text = question.question.text
-    }
-    
-    private func configCell(answer: QuestionAnswer) {
-        self.submitDateLabel.text = answer.isCorrect ? "정답" : "오답"
+    private func configCell(_ data: QuestionJoinAnswer) {
+        self.questionLabel.text = data.question.question.text
     }
 }
 

@@ -8,7 +8,7 @@
 import UIKit
 import DropDown
 
-enum BuilUpMoreDropDownMenu: CaseIterable {
+enum DocumentMoreDropDownMenu: CaseIterable {
     case allQuestions
     case contact
     
@@ -30,7 +30,7 @@ enum BuilUpMoreDropDownMenu: CaseIterable {
         }
     }
     
-    static func firstItem(title: String) -> BuilUpMoreDropDownMenu? {
+    static func firstItem(title: String) -> DocumentMoreDropDownMenu? {
         return Self.allCases.first { $0.title == title }
     }
 }

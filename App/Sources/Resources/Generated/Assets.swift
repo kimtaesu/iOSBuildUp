@@ -35,6 +35,7 @@ public enum Asset {
   public static let launchTetris = ImageAsset(name: "launch_tetris")
   public static let logout = ImageAsset(name: "logout")
   public static let moreVert = ImageAsset(name: "more_vert")
+  public static let settings = ImageAsset(name: "settings")
   public static let star = ImageAsset(name: "star")
   public static let starBorder = ImageAsset(name: "star_border")
   public static let tabBookmark = ImageAsset(name: "tab_bookmark")

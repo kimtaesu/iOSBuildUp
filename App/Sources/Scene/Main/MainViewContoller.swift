@@ -29,8 +29,6 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
     
     let dropDown = DropDown()
     
-    private var aaa = DisposeBag()
-    
     private let collectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
@@ -46,11 +44,11 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
         return button
     }()
     
-    private let buildUpViewScreen: (_ subject: String, _ docId: String?) -> UIViewController
+    private let buildUpViewScreen: (_ subject: String?) -> UIViewController
     
     init(
         reactor: Reactor,
-        buildUpViewScreen: @escaping (_ subject: String, _ docId: String?) -> UIViewController
+        buildUpViewScreen: @escaping (_ subject: String?) -> UIViewController
     ) {
         defer { self.reactor = reactor }
         self.buildUpViewScreen = buildUpViewScreen
@@ -72,7 +70,12 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
         }
     }
     override func setupNavigationBarItems() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self.userProfileView)
+        let settingIcon = Asset.settings.image.resizeImage(size: .init(width: 36, height: 36))
+        let settings = UIBarButtonItem(image: settingIcon, style: .plain, target: self, action: #selector(self.settings))
+        self.navigationItem.rightBarButtonItems = [settings, UIBarButtonItem(customView: self.userProfileView)]
+    }
+    
+    @objc func settings() {
     }
 }
 
@@ -101,18 +104,12 @@ extension MainViewContoller: ReactorKit.View, HasDisposeBag {
     typealias Reactor = MainViewReactor
     
     func bind(reactor: Reactor) {
-        
         self.rx.viewDidLoad
-            .map { Reactor.Action.refresh }
-            .bind(to: reactor.action)
-            .disposed(by: self.disposeBag)
-        
-        self.rx.viewWillAppear
             .map { _ in Reactor.Action.listenSubjects }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
         
-        self.rx.viewWillAppear
+        self.rx.viewDidLoad
             .map { _ in Reactor.Action.listenUserState }
             .bind(to: reactor.action)
             .disposed(by: self.disposeBag)
@@ -124,7 +121,7 @@ extension MainViewContoller: ReactorKit.View, HasDisposeBag {
                 switch sectionItem {
                 case .card(let reactor):
                     let subject = reactor.currentState.item.subject
-                    let buildUpViewController = self.buildUpViewScreen(subject, nil)
+                    let buildUpViewController = self.buildUpViewScreen(subject)
                     self.navigationController?.pushViewController(buildUpViewController, animated: true)
                 }
             })
@@ -189,12 +186,5 @@ extension MainViewContoller: ReactorKit.View, HasDisposeBag {
                     }
             }
         )
-    }
-}
-
-
-extension Firestore {
-    enum Collection: String {
-        case buildUp = "build_up"
     }
 }
