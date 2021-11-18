@@ -23,6 +23,8 @@ class UIDocumentAnswerCell: UICollectionViewCell {
         static let answers: UIFont = FontFamily.NotoSansCJKKR.medium.font(size: 16)
     }
     
+    public static var borderColor: UIColor?
+    
     private let answersLabel: UILabel = {
         let label = UILabel()
         label.font = Font.answers
@@ -36,15 +38,15 @@ class UIDocumentAnswerCell: UICollectionViewCell {
         checkBox.markType = .checkmark
         checkBox.stateChangeAnimation = .fill
         checkBox.checkmarkLineWidth = 1.5
-        checkBox.tintColor = ColorName.accent.color
         return checkBox
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.layer.borderWidth = 1
-        self.layer.borderColor = ColorName.primary.color.cgColor
+        self.layer.borderWidth = 2
+        self.checkBox.secondaryTintColor = Self.borderColor
+        self.layer.borderColor = Self.borderColor?.cgColor
         [self.answersLabel, self.checkBox].forEach {
             self.contentView.addSubview($0)
         }

@@ -10,7 +10,6 @@ import RxDataSources
 enum DocumentSection {
     case questions([DocumentSection.Item])
     case answers([DocumentSection.Item])
-    case like(DocumentSection.Item)
     case tag(DocumentSection.Item)
 }
 
@@ -19,8 +18,6 @@ extension DocumentSection: SectionModelType {
 
     var items: [Item] {
       switch self {
-      case .like(let item):
-          return [item]
       case .tag(let item):
           return [item]
       case .answers(let items):
@@ -31,8 +28,6 @@ extension DocumentSection: SectionModelType {
     }
     public init(original: DocumentSection, items: [Item]) {
         switch original {
-        case .like(let item):
-            self = .like(item)
         case .tag(let item):
             self = .tag(item)
         case .answers(let items):
@@ -46,6 +41,5 @@ extension DocumentSection: SectionModelType {
 enum DocumentSectionItem {
     case question(DocumentAttrQuestion)
     case tags([String])
-    case like(UIDocumentLikeCellReactor)
     case checkChioce(UIDocumentAnswerCellReactor)
 }

@@ -27,7 +27,7 @@ final class UIDocumentViewReactor: Reactor {
     struct State {
         var toast: String?
         
-        let subject: String?
+        let subject: DocumentSubject
         var sections: [DocumentPaginationSection] = []
         var documents: [QuestionJoinAnswer] = []
         
@@ -37,7 +37,7 @@ final class UIDocumentViewReactor: Reactor {
     
     private let firestoreRepository: FirestoreRepository
     
-    init(subject: String?, repository: FirestoreRepository) {
+    init(subject: DocumentSubject, repository: FirestoreRepository) {
         self.firestoreRepository = repository
         self.initialState = State(subject: subject)
     }
@@ -47,7 +47,7 @@ final class UIDocumentViewReactor: Reactor {
         case .setCurrentPage(let page):
             return .just(.setCurrentPage(page))
         case .listenQuestions:
-            return self.firestoreRepository.listenQuestionPagination(subject: self.currentState.subject)
+            return self.firestoreRepository.listenQuestionPagination(subject: self.currentState.subject.subject)
                 .map(Mutation.setQuestionPagination)
         case .tapSubmit:
             guard let item = self.currentState.sections[safe: 0]?.items[self.currentState.currentPage] else { return .empty() }
@@ -99,10 +99,9 @@ extension UIDocumentViewReactor {
 
 extension UIDocumentViewReactor.State {
     var navigationTitle: String {
-        let title = self.subject ?? "모든 문제"
         guard self.totalCount > 0 else { return "" }
-        let page = "(\(self.currentPage + 1) / \(self.totalCount))"
-        return title + " " + page
+        let page = "(\(self.currentPage + 1)/\(self.totalCount))"
+        return self.subject.subject + " " + page
     }
     var totalCount: Int {
         self.documents.count

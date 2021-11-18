@@ -10,6 +10,8 @@ import UIKit
 import ReusableKit
 import RxDataSources
 import DropDown
+import TagListView
+import M13Checkbox
 
 class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     
@@ -48,16 +50,17 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
         button.setTitle("제출", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = FontFamily.NotoSansCJKKR.medium.font(size: 20)
-        button.fillColor = ColorName.primary.color
         return button
     }()
     
     let dropDown = DropDown()
-
+    private let tintColor: UIColor
+    
     init(
         reactor: Reactor
     ) {
         defer { self.reactor = reactor }
+        self.tintColor = UIColor(hex: reactor.currentState.subject.color)
         super.init()
     }
     
@@ -67,14 +70,21 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .white
+        self.setColorAppreance()
         self.view.addSubview(self.collectionView)
         self.view.addSubview(self.submitButton)
-        
+        self.view.backgroundColor = .white
         self.submitButton.layer.shadowOffset = .init(width: 0, height: 1)
         self.submitButton.layer.shadowColor = UIColor.black.cgColor
         self.collectionView.delegate = self
      }
+
+    private func setColorAppreance() {
+        self.submitButton.fillColor = self.tintColor
+        TagListView.appearance().tagBackgroundColor = self.tintColor
+        M13Checkbox.appearance().tintColor = self.tintColor
+        UIDocumentAnswerCell.borderColor = self.tintColor
+    }
     
     override func setupConstraints() {
         self.collectionView.snp.makeConstraints {
@@ -175,6 +185,7 @@ extension UIDocumentViewController: ReactorKit.View, HasDisposeBag {
     typealias Reactor = UIDocumentViewReactor
     
     func bind(reactor: Reactor) {
+        
         self.rx.viewDidLoad
             .map { _ in Reactor.Action.listenQuestions }
             .bind(to: reactor.action)

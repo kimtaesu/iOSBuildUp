@@ -15,7 +15,6 @@ class UIDocumentCell: UICollectionViewCell {
     private struct Reusable {
         static let question = ReusableCell<UIDocumentQuestionCell>()
         static let checkChioce = ReusableCell<UIDocumentAnswerCell>()
-        static let like = ReusableCell<UIDocumentLikeCell>()
         static let tag = ReusableCell<UIDocumentTagCell>()
     }
     
@@ -28,7 +27,6 @@ class UIDocumentCell: UICollectionViewCell {
         collectionView.backgroundColor = .clear
         collectionView.register(Reusable.question)
         collectionView.register(Reusable.checkChioce)
-        collectionView.register(Reusable.like)
         collectionView.register(Reusable.tag)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
@@ -44,10 +42,6 @@ class UIDocumentCell: UICollectionViewCell {
             return cell
         case .checkChioce(let reactor):
             let cell = collectionView.dequeue(Reusable.checkChioce, for: indexPath)
-            cell.reactor = reactor
-            return cell
-        case .like(let reactor):
-            let cell = collectionView.dequeue(Reusable.like, for: indexPath)
             cell.reactor = reactor
             return cell
         case .tags(let tags):
@@ -82,8 +76,6 @@ extension UIDocumentCell: UICollectionViewDelegateFlowLayout {
         let sectionWidth = collectionView.sectionWidth(at: indexPath.section)
         
         switch self.dataSource[indexPath] {
-        case .like:
-            return Reusable.like.class.size(sectionWidth)
         case .question(let q):
             return Reusable.question.class.size(sectionWidth, question: q)
         case .checkChioce(let reactor):
@@ -97,7 +89,7 @@ extension UIDocumentCell: UICollectionViewDelegateFlowLayout {
         switch self.dataSource[section] {
         case .answers:
             return 8
-        case .questions, .like, .tag:
+        case .questions, .tag:
             return 0
         }
     }
@@ -114,8 +106,6 @@ extension UIDocumentCell: UICollectionViewDelegateFlowLayout {
         case .tag:
             return inset
         case .answers:
-            return inset
-        case .like:
             return inset
         }
     }

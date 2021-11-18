@@ -11,5 +11,6 @@ struct DocumentSubject: Codable, CodingDictable, Equatable {
     let subject: String
     let title: String
     let subtitle: String
+    let color: String
     let thumbnail: String?
 }

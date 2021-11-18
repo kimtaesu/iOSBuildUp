@@ -11,11 +11,14 @@ def update_subjects(data):
 
     subject = data['subject']
     title = data['title']
+    subtitle = data['subtitle']
+    color = data['color']
     thumbnail = data['thumbnail']
 
     doc_ref = db.collection("subjects").document(subject)
 
     doc_ref.set({
+        'color':  color,
         'subject': subject,
         'title': title,
         'subtitle': "",

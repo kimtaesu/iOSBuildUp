@@ -38,8 +38,8 @@ class UISplashViewController: UIViewController {
             $0.width.equalTo(120)
             $0.height.equalTo(self.launchImageView.snp.width)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            self?.onNext()
+        DispatchQueue.main.async {
+            self.onNext()
         }
     }
 }

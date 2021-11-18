@@ -14,6 +14,11 @@ import DropDown
 
 class MainViewContoller: BaseViewController, HasDropDownMenu {
     
+    private struct Metrics {
+        static let navigationItemSize: CGFloat = 36
+        static let minimumInteritemSpacing: CGFloat = 16
+        static let sectionPadding: CGFloat = minimumInteritemSpacing
+    }
     private struct Reusable {
         static let card = ReusableCell<SubjectCardCell>()
     }
@@ -40,15 +45,15 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
     }()
  
     private let userProfileView: UIUserProfileView = {
-        let button = UIUserProfileView(frame: .init(x: 0, y: 0, width: 36, height: 36))
+        let button = UIUserProfileView()
         return button
     }()
     
-    private let buildUpViewScreen: (_ subject: String?) -> UIViewController
+    private let buildUpViewScreen: (DocumentSubject) -> UIViewController
     
     init(
         reactor: Reactor,
-        buildUpViewScreen: @escaping (_ subject: String?) -> UIViewController
+        buildUpViewScreen: @escaping (DocumentSubject) -> UIViewController
     ) {
         defer { self.reactor = reactor }
         self.buildUpViewScreen = buildUpViewScreen
@@ -70,9 +75,8 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
         }
     }
     override func setupNavigationBarItems() {
-        let settingIcon = Asset.settings.image.resizeImage(size: .init(width: 36, height: 36))
-        let settings = UIBarButtonItem(image: settingIcon, style: .plain, target: self, action: #selector(self.settings))
-        self.navigationItem.rightBarButtonItems = [settings, UIBarButtonItem(customView: self.userProfileView)]
+        self.userProfileView.size = .init(width: Metrics.navigationItemSize, height: Metrics.navigationItemSize)
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: self.userProfileView)]
     }
     
     @objc func settings() {
@@ -81,20 +85,26 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
 
 extension MainViewContoller: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let sectionWidth = collectionView.sectionWidth(at: indexPath.section)
+        let sectionWidth = collectionView.sectionWidth(at: indexPath.section) - Metrics.minimumInteritemSpacing
         switch self.dataSource[indexPath] {
         case .card(let reactor):
             return Reusable.card.class.size(sectionWidth, reactor)
         }
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         switch self.dataSource[section] {
         case .cards:
-            return .init(top: 16, left: 16, bottom: 16, right: 16)
+            return .init(one: Metrics.sectionPadding)
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return Metrics.minimumInteritemSpacing
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 16
+        return Metrics.minimumInteritemSpacing
     }
 }
 
@@ -120,7 +130,7 @@ extension MainViewContoller: ReactorKit.View, HasDisposeBag {
                 guard let self = self else { return }
                 switch sectionItem {
                 case .card(let reactor):
-                    let subject = reactor.currentState.item.subject
+                    let subject = reactor.currentState.item
                     let buildUpViewController = self.buildUpViewScreen(subject)
                     self.navigationController?.pushViewController(buildUpViewController, animated: true)
                 }

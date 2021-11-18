@@ -18,7 +18,6 @@ class UIDocumentTagCell: UICollectionViewCell {
         let tagListView = TagListView()
         tagListView.textFont = Font.tag
         tagListView.textColor = .white
-        tagListView.tagBackgroundColor = ColorName.primary.color
         tagListView.cornerRadius = 8
         tagListView.paddingX = 5
         tagListView.paddingY = 5
@@ -31,7 +30,7 @@ class UIDocumentTagCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.addSubview(self.tagListView)
-        
+         
         self.tagListView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }

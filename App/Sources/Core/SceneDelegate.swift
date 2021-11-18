@@ -34,7 +34,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
         
         // MARK: UIBuildUpViewController
-        let buildUpViewScreen: (_ subject: String?) -> UIViewController = { subject in
+        let buildUpViewScreen: (_ subject: DocumentSubject) -> UIViewController = { subject in
             let reactor = UIDocumentViewController.Reactor(subject: subject, repository: fireStoreRepository)
             return UIDocumentViewController(reactor: reactor)
         }
@@ -55,6 +55,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         window.backgroundColor = .white
         self.window = window
+        
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

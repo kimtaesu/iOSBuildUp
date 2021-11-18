@@ -31,6 +31,9 @@ class BaseViewController: UIViewController {
         return label
     }()
     
+    
+    private var gradientLayer: CAGradientLayer?
+    
     open var backImageSize: CGSize {
         return .init(width: 30, height: 30)
     }
@@ -95,6 +98,4 @@ class BaseViewController: UIViewController {
       // Override point
         
     }
-    
-    
 }

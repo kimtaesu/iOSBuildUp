@@ -1,6 +1,3 @@
-
-Primary: #0F893D
-Accent: #D03538
 888: #888888
 
 
@@ -10,4 +7,4 @@ AppMenuActionMenuBG: #F2F2F2
 
 AuthProviderSelectedBG: #b3cffc
 
-CardBg: #b5b2aa
+MainSubjectDivider: #9AB9FE

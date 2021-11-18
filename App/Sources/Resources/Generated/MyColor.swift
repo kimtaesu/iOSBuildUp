@@ -21,9 +21,6 @@ public struct ColorName {
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#888888"></span>
   /// Alpha: 100% <br/> (0x888888ff)
   public static let _888 = ColorName(rgbaValue: 0x888888ff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#d03538"></span>
-  /// Alpha: 100% <br/> (0xd03538ff)
-  public static let accent = ColorName(rgbaValue: 0xd03538ff)
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#f2f2f2"></span>
   /// Alpha: 100% <br/> (0xf2f2f2ff)
   public static let appMenuActionMenuBG = ColorName(rgbaValue: 0xf2f2f2ff)
@@ -36,12 +33,9 @@ public struct ColorName {
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#b3cffc"></span>
   /// Alpha: 100% <br/> (0xb3cffcff)
   public static let authProviderSelectedBG = ColorName(rgbaValue: 0xb3cffcff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#b5b2aa"></span>
-  /// Alpha: 100% <br/> (0xb5b2aaff)
-  public static let cardBg = ColorName(rgbaValue: 0xb5b2aaff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#0f893d"></span>
-  /// Alpha: 100% <br/> (0x0f893dff)
-  public static let primary = ColorName(rgbaValue: 0x0f893dff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#9ab9fe"></span>
+  /// Alpha: 100% <br/> (0x9ab9feff)
+  public static let mainSubjectDivider = ColorName(rgbaValue: 0x9ab9feff)
 }
 // swiftlint:enable identifier_name line_length type_body_length
 

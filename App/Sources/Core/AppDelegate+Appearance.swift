@@ -15,14 +15,12 @@ extension AppDelegate {
     }
     
     func setUpAppearance() {
-        self.setUpUITabBarItem()
         self.setUpDropDown()
+        self.setUpNavigationBar()
     }
     
-    private func setUpUITabBarItem() {
-        UITabBar.appearance().unselectedItemTintColor = ColorName._888.color
-        UITabBar.appearance().tintColor = ColorName.primary.color
-        UITabBarItem.appearance().setTitleTextAttributes([.font : Font.tabItemTitle], for: .normal)
+    private func setUpNavigationBar() {
+        UINavigationBar.appearance().barTintColor = .white
     }
     
     private func setUpDropDown() {
@@ -35,7 +33,6 @@ extension AppDelegate {
         appearance.shadowRadius = 25
         appearance.animationduration = 0.25
         appearance.textColor = .black
-        appearance.tintColor = ColorName.primary.color
         appearance.textFont = FontFamily.NotoSansCJKKR.medium.font(size: 14)
     }
     
