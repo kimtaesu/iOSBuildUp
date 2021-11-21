@@ -1,10 +1,5 @@
-888: #888888
+dropdownSelected: #b3cffc
 
-
-AppMenuHeaderBG: #F6F6F6
-AppMenuHeaderTitle: #9C9C9C
-AppMenuActionMenuBG: #F2F2F2
-
-AuthProviderSelectedBG: #b3cffc
-
-MainSubjectDivider: #9AB9FE
+answerWrong: #CC0200
+answerCorrect: #2EC54F
+answerNotYet: #E6E6E6

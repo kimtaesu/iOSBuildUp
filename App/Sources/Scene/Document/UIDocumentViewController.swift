@@ -54,13 +54,14 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
     }()
     
     let dropDown = DropDown()
-    private let tintColor: UIColor
+    private let accentColor: UIColor
+    private var animationView: UIAnswerAnimationView?
     
     init(
         reactor: Reactor
     ) {
         defer { self.reactor = reactor }
-        self.tintColor = UIColor(hex: reactor.currentState.subject.color)
+        self.accentColor = UIColor(hex: reactor.currentState.subject.color)
         super.init()
     }
     
@@ -80,10 +81,10 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
      }
 
     private func setColorAppreance() {
-        self.submitButton.fillColor = self.tintColor
-        TagListView.appearance().tagBackgroundColor = self.tintColor
-        M13Checkbox.appearance().tintColor = self.tintColor
-        UIDocumentAnswerCell.borderColor = self.tintColor
+        self.submitButton.fillColor = self.accentColor
+        TagListView.appearance().tagBackgroundColor = self.accentColor
+        M13Checkbox.appearance().tintColor = self.accentColor
+        UIDocumentAnswerCell.borderColor = self.accentColor
     }
     
     override func setupConstraints() {
@@ -135,8 +136,8 @@ class UIDocumentViewController: BaseViewController, HasDropDownMenu {
                 switch found {
                 case .allQuestions:
                     guard let docListReactor = self.reactor?.createDocumentListReactor() else { return }
-                    let docListViewController = UIQuestionListViewController(reactor: docListReactor, didSelectedAt: {
-                        self.reactor?.action.onNext(.setCurrentPage($0.item))
+                    let docListViewController = UIQuestionListViewController(reactor: docListReactor, didSelectedAt: { docId in
+                        self.reactor?.action.onNext(.setCurrentDocId(docId))
                     })
                     let presentViewController = UINavigationController(rootViewController: docListViewController)
                     presentViewController.modalPresentationStyle = .custom
@@ -210,11 +211,15 @@ extension UIDocumentViewController: ReactorKit.View, HasDisposeBag {
             .subscribe(onNext: { [weak self] sections in
                 guard let self = self else { return }
                 self.sections = sections
-                
-//                self.collectionView.scrollToItem(
-//                    at: .init(item: reactor.currentState.currentPage, section: 0),
-//                    at: .left,
-//                    animated: false)
+            })
+            .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.currentPage }
+            .filterNil()
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] page in
+                guard let self = self else { return }
+//                self.collectionView.scrollToItem(at: .init(item: page, section: 0), at: .top, animated: false)
             })
             .disposed(by: self.disposeBag)
         
@@ -222,6 +227,18 @@ extension UIDocumentViewController: ReactorKit.View, HasDisposeBag {
             .filterNil()
             .subscribe(onNext: { toast in
                 Toast.init(text: toast).show()
+            })
+            .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.isCorrect }
+            .filterNil()
+            .subscribe(onNext: { [weak self] isCorrect in
+                guard let self = self else { return }
+                self.animationView?.removeFromSuperview()
+                
+                let type = AnswerAnimationType(isCorrect: isCorrect)
+                self.animationView = UIAnswerAnimationView(type: type)
+                self.animationView?.show(superView: self.view)
             })
             .disposed(by: self.disposeBag)
     }

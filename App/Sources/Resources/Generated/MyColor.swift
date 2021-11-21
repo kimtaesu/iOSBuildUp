@@ -18,24 +18,18 @@ public struct ColorName {
   public let rgbaValue: UInt32
   public var color: Color { return Color(named: self) }
 
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#888888"></span>
-  /// Alpha: 100% <br/> (0x888888ff)
-  public static let _888 = ColorName(rgbaValue: 0x888888ff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#f2f2f2"></span>
-  /// Alpha: 100% <br/> (0xf2f2f2ff)
-  public static let appMenuActionMenuBG = ColorName(rgbaValue: 0xf2f2f2ff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#f6f6f6"></span>
-  /// Alpha: 100% <br/> (0xf6f6f6ff)
-  public static let appMenuHeaderBG = ColorName(rgbaValue: 0xf6f6f6ff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#9c9c9c"></span>
-  /// Alpha: 100% <br/> (0x9c9c9cff)
-  public static let appMenuHeaderTitle = ColorName(rgbaValue: 0x9c9c9cff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#2ec54f"></span>
+  /// Alpha: 100% <br/> (0x2ec54fff)
+  public static let answerCorrect = ColorName(rgbaValue: 0x2ec54fff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#e6e6e6"></span>
+  /// Alpha: 100% <br/> (0xe6e6e6ff)
+  public static let answerNotYet = ColorName(rgbaValue: 0xe6e6e6ff)
+  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#cc0200"></span>
+  /// Alpha: 100% <br/> (0xcc0200ff)
+  public static let answerWrong = ColorName(rgbaValue: 0xcc0200ff)
   /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#b3cffc"></span>
   /// Alpha: 100% <br/> (0xb3cffcff)
-  public static let authProviderSelectedBG = ColorName(rgbaValue: 0xb3cffcff)
-  /// <span style="display:block;width:3em;height:2em;border:1px solid black;background:#9ab9fe"></span>
-  /// Alpha: 100% <br/> (0x9ab9feff)
-  public static let mainSubjectDivider = ColorName(rgbaValue: 0x9ab9feff)
+  public static let dropdownSelected = ColorName(rgbaValue: 0xb3cffcff)
 }
 // swiftlint:enable identifier_name line_length type_body_length
 

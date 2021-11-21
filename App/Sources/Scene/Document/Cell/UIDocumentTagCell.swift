@@ -18,12 +18,6 @@ class UIDocumentTagCell: UICollectionViewCell {
         let tagListView = TagListView()
         tagListView.textFont = Font.tag
         tagListView.textColor = .white
-        tagListView.cornerRadius = 8
-        tagListView.paddingX = 5
-        tagListView.paddingY = 5
-        tagListView.marginX = 5
-        tagListView.marginY = 5
-        
         return tagListView
     }()
     
@@ -52,14 +46,12 @@ class UIDocumentTagCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        let contentViewBounds = self.contentView.bounds
-        self.tagListView.frame = .init(x: contentViewBounds.left, y: contentViewBounds.top, width: contentViewBounds.width, height: contentViewBounds.height)
+        self.tagListView.frame = .init(x: self.bounds.left, y: self.bounds.top, width: self.bounds.width, height: self.bounds.height)
     }
 }
 
 extension UIDocumentTagCell {
-    
     class func size(_ width: CGFloat, tags: [String]) -> CGSize {
-        return .init(width: width, height: 80)
+        return .init(width: width, height: TagListView.height(maxLine: 2))
     }
 }

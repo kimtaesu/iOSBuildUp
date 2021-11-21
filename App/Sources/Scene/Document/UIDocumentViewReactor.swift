@@ -12,16 +12,17 @@ final class UIDocumentViewReactor: Reactor {
     let initialState: State
     
     enum Action {
+        case setCurrentDocId(String)
         case setCurrentPage(Int)
         case listenQuestions
         case tapSubmit
     }
     
     enum Mutation {
-        case setLoading(Bool)
         case setQuestionPagination(QuestionPagination)
         case setCorrect(Bool)
         case setCurrentPage(Int)
+        case setToastMessage(String)
     }
     
     struct State {
@@ -31,8 +32,9 @@ final class UIDocumentViewReactor: Reactor {
         var sections: [DocumentPaginationSection] = []
         var documents: [QuestionJoinAnswer] = []
         
-        var isLoading: Bool = false
-        var currentPage: Int = 0
+        var isCorrect: Bool?
+        
+        var currentPage: Int?
     }
     
     private let firestoreRepository: FirestoreRepository
@@ -44,17 +46,23 @@ final class UIDocumentViewReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .setCurrentDocId(let docId):
+            let foundPage = self.currentState.documents.firstIndex { $0.docId == docId }
+            guard let foundPage = foundPage else { return .empty() }
+            return .just(.setCurrentPage(foundPage))
         case .setCurrentPage(let page):
             return .just(.setCurrentPage(page))
         case .listenQuestions:
             return self.firestoreRepository.listenQuestionPagination(subject: self.currentState.subject.subject)
                 .map(Mutation.setQuestionPagination)
         case .tapSubmit:
-            guard let item = self.currentState.sections[safe: 0]?.items[self.currentState.currentPage] else { return .empty() }
+            guard let currentPage = self.currentState.currentPage else { return .empty() }
+            guard let item = self.currentState.sections[safe: 0]?.items[safe: currentPage] else { return .empty() }
             switch item {
             case .document(let reactor):
-                guard let currentAnswer = reactor.currentState.selcetedAnswer else { return .empty() }
-                return self.firestoreRepository.answer(docId: reactor.currentState.data.docId, choice: currentAnswer)
+                guard let currentAnswer = reactor.currentState.selcetedAnswer else { return .just(.setToastMessage("선택된 답이 없습니다.")) }
+                let subject = self.currentState.subject.subject
+                return self.firestoreRepository.answer(subject: subject, docId: reactor.currentState.data.docId, choice: currentAnswer)
                     .map(Mutation.setCorrect)
             }
         }
@@ -64,21 +72,18 @@ final class UIDocumentViewReactor: Reactor {
         var state = state
         state.toast = nil
         switch mutation {
-        case .setCurrentPage(let page):
-            state.currentPage = page
+        case .setToastMessage(let toast):
+            state.toast = toast
             return state
-        case .setLoading(let isLoading):
-            state.isLoading = isLoading
+        case .setCurrentPage(let page):
+            state.currentPage = 0
+            return state
         case .setQuestionPagination(let pagination):
             state.documents = pagination.questionAnswers
-            state.currentPage = pagination.answerCount
+            state.currentPage = 0
             state.sections = self.makeSections(pagination: pagination)
         case .setCorrect(let isCorrect):
-            if isCorrect {
-                state.toast = "정답입니다."
-            } else {
-                state.toast = "오답입니다."
-            }
+            state.isCorrect = isCorrect
         }
         return state
     }
@@ -100,13 +105,15 @@ extension UIDocumentViewReactor {
 extension UIDocumentViewReactor.State {
     var navigationTitle: String {
         guard self.totalCount > 0 else { return "" }
-        let page = "(\(self.currentPage + 1)/\(self.totalCount))"
+        guard let currentPage = self.currentPage else { return "" }
+        let page = "(\(currentPage + 1)/\(self.totalCount))"
         return self.subject.subject + " " + page
     }
     var totalCount: Int {
         self.documents.count
     }
     var currentDocument: QuestionJoinAnswer? {
-        self.documents[safe: self.currentPage]
+        guard let currentPage = self.currentPage else { return nil }
+        return self.documents[safe: currentPage]
     }
 }

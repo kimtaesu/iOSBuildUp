@@ -10,7 +10,6 @@ import UIKit
 import ReusableKit
 import RxDataSources
 import FirebaseFirestore
-import BetterSegmentedControl
 
 class UIQuestionListViewController: BaseViewController {
     
@@ -42,9 +41,9 @@ class UIQuestionListViewController: BaseViewController {
         return collectionView
     }()
     
-    private let didSelectedAt: (IndexPath) -> Void
+    private let didSelectedAt: (_ docId: String) -> Void
     
-    init(reactor: Reactor, didSelectedAt: @escaping (IndexPath) -> Void) {
+    init(reactor: Reactor, didSelectedAt: @escaping (_ docId: String) -> Void) {
         defer { self.reactor = reactor }
         self.didSelectedAt = didSelectedAt
         super.init()
@@ -114,8 +113,9 @@ extension UIQuestionListViewController: ReactorKit.View, HasDisposeBag {
         self.collectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                let docId = reactor.currentState.documents[indexPath.item].docId
                 self.dismiss(animated: true) {
-                    self.didSelectedAt(indexPath)
+                    self.didSelectedAt(docId)
                 }
             })
             .disposed(by: self.disposeBag)

@@ -29,10 +29,10 @@ extension UIDocumentViewController {
 
 private extension QuestionJoinAnswer {
     var asSubjectMail: String {
-        "\(self.docId) 오탈자 및 문의드립니다."
+        "오탈자 및 문의드립니다."
     }
     
     var asBodyMail: String {
-        "안녕하세요! \(self.docId) \(self.question.question.text) 오탈자 및 문의드립니다."
+        "안녕하세요! \(self.question.question.text) 오탈자 및 문의드립니다."
     }
 }

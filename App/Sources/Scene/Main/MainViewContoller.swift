@@ -49,6 +49,18 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
         return button
     }()
     
+    #if FEATURE_MORE
+    private lazy var moreButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(
+            image: Asset.moreVert.image.withRenderingMode(.alwaysOriginal),
+            style: .plain,
+            target: self,
+            action: #selector(self.more)
+        )
+        return button
+    }()
+    #endif
+    
     private let buildUpViewScreen: (DocumentSubject) -> UIViewController
     
     init(
@@ -74,13 +86,43 @@ class MainViewContoller: BaseViewController, HasDropDownMenu {
             $0.edges.equalToSuperview()
         }
     }
+    
     override func setupNavigationBarItems() {
+        // remove navigation shadow
+        self.navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        
         self.userProfileView.size = .init(width: Metrics.navigationItemSize, height: Metrics.navigationItemSize)
+        
+        #if FEATURE_MORE
+        self.navigationItem.rightBarButtonItems = [self.moreButton, UIBarButtonItem(customView: self.userProfileView)]
+        #endif
+        
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: self.userProfileView)]
     }
     
-    @objc func settings() {
+    #if FEATURE_MORE
+    @objc func more() {
+        let dataSources: [String] = MainMoreDropDownMenu.allCases.map { $0.title }
+        self.showDropDown(
+            dataSources: dataSources,
+            anchorView: self.moreButton.plainView,
+            configIcon: { MainMoreDropDownMenu.firstItem(title: $0)?.icon },
+            didSelected: { [weak self] selected in
+                guard let self = self else { return }
+                guard let found = MainMoreDropDownMenu.firstItem(title: selected) else { return }
+                switch found {
+                case .contact:
+                    break
+                case .appVersion:
+                    break
+                case .review:
+                    break
+                }
+            }
+        )
     }
+    #endif
 }
 
 extension MainViewContoller: UICollectionViewDelegateFlowLayout {

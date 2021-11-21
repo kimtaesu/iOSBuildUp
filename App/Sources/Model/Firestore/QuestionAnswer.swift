@@ -9,6 +9,7 @@ import Foundation
 import SwiftDictionaryCoding
 
 struct QuestionAnswer: Codable, CodingDictable, Equatable, HasDocumentId {
+    let subject: String
     let docId: String
     let timestamp: Date
     let answer: String
@@ -16,7 +17,8 @@ struct QuestionAnswer: Codable, CodingDictable, Equatable, HasDocumentId {
 }
 
 extension QuestionAnswer {
-    init(docId: String, choice: CheckChoice) {
+    init(subject: String, docId: String, choice: CheckChoice) {
+        self.subject = subject
         self.docId = docId
         self.timestamp = Date()
         self.answer = choice.answer

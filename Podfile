@@ -39,8 +39,9 @@ target 'App' do
   pod 'TagListView', '~> 1.0'
   pod 'Kingfisher'
   pod 'DropDown'
-  pod 'BetterSegmentedControl', '~> 2.0'
   pod 'Toaster'
+  pod 'lottie-ios'
+  
   # Firebase
   pod 'Firebase/Analytics'
   pod 'Firebase/Auth'

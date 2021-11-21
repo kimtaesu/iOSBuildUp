@@ -16,11 +16,11 @@ class UIDocumentAnswerCell: UICollectionViewCell {
         static let top: CGFloat = 10
         static let bottom: CGFloat = top
         static let checkBoxLeft: CGFloat = 10
-        static let checkBoxSize: CGFloat = 20
+        static let checkBoxSize: CGFloat = 24
     }
     
     private struct Font {
-        static let answers: UIFont = FontFamily.NotoSansCJKKR.medium.font(size: 16)
+        static let answers: UIFont = FontFamily.NotoSansCJKKR.medium.font(size: 18)
     }
     
     public static var borderColor: UIColor?
@@ -58,6 +58,7 @@ class UIDocumentAnswerCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.checkBox.checkState = .unchecked
         self.disposeBag = DisposeBag()
     }
     
@@ -73,8 +74,9 @@ class UIDocumentAnswerCell: UICollectionViewCell {
         
         self.answersLabel.sizeToFit()
         self.answersLabel.left = self.bounds.left + Metrics.left
-        self.answersLabel.centerY = self.bounds.centerY
-        self.answersLabel.width = self.checkBox.left - Metrics.checkBoxLeft
+        self.answersLabel.top = self.bounds.top
+        self.answersLabel.width = self.checkBox.left - Metrics.checkBoxLeft - self.answersLabel.left
+        self.answersLabel.height = self.bounds.height
     }
 }
 
@@ -111,11 +113,14 @@ extension UIDocumentAnswerCell {
         let right = Metrics.right
         let top = Metrics.top
         let bottom = Metrics.bottom
+        
         let fitsWidth = width - (Metrics.checkBoxSize + Metrics.checkBoxLeft + left + right)
         let answersHeight = snap(reactor.currentState.answers.height(thatFitsWidth: fitsWidth, font: Font.answers, maximumNumberOfLines: 2))
+
         let height = top
         + max(Metrics.checkBoxSize, answersHeight)
         + bottom
+        
         return .init(width: width, height: height)
     }
 }

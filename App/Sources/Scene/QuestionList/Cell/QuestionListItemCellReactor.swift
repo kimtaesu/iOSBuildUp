@@ -21,10 +21,15 @@ final class QuestionListItemCellReactor: Reactor {
     
     struct State {
         let doc: QuestionJoinAnswer
+        var answerType: AnswerType {
+            if let answer = self.doc.answer {
+                return answer.isCorrect ? AnswerType.correct : AnswerType.wrong
+            }
+            return .notYet
+        }
     }
     
     init(doc: QuestionJoinAnswer) {
         self.initialState = State(doc: doc)
     }
 }
-

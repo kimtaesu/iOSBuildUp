@@ -29,9 +29,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.overrideUserInterfaceStyle = .light
         window.backgroundColor = .white
         
-        let authService: AuthServiceType = FirebaseAuthService()
-        
-        let fireStoreRepository: FirestoreRepository = FirestoreRepository(authService: authService)
+        let fireStoreRepository: FirestoreRepository = FirestoreRepository()
         
         // MARK: UIBuildUpViewController
         let buildUpViewScreen: (_ subject: DocumentSubject) -> UIViewController = { subject in
@@ -48,10 +46,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             window.setRootViewController(viewController, options: .init(direction: .fade, style: .easeIn))
         })
-
+    
         
-//        window.rootViewController = UINavigationController(rootViewController: buildUpViewScreen(nil))
-        window.rootViewController = splashViewController
+        let reactor = UIQuestionListViewController.Reactor(
+            documents: [
+                .init(question: .init(docId: "A", question: .init(text: "SwiftUI222 Hot Observable의 특징이 아닌 것은 무엇일까요?"), choices: [], tags: ["AA"]), answer: .init(subject: "", docId: "", choice: .init(answer: "A", isCorrect: true))),
+                .init(question: .init(docId: "A", question: .init(text: "SwiftUI222 Hot Observable의 특징이 아닌 것은 무엇일까요?"), choices: [], tags: ["AA"]), answer: .init(subject: "", docId: "", choice: .init(answer: "A", isCorrect: false)))
+            ]
+        )
+
+        window.rootViewController = UINavigationController(rootViewController: UIQuestionListViewController(reactor: reactor, didSelectedAt: { _ in }))
+//        window.rootViewController = splashViewController
         window.makeKeyAndVisible()
         window.backgroundColor = .white
         self.window = window

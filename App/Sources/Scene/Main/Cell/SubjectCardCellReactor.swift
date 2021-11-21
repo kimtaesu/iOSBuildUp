@@ -20,7 +20,7 @@ final class SubjectCardCellReactor: Reactor {
     
     struct State {
         let item: DocumentSubject
-        var documents: QuestionPagination?
+        var answerText: String?
     }
     
     private let repository: FirestoreRepository
@@ -40,8 +40,13 @@ final class SubjectCardCellReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var state = state
         switch mutation {
-        case .setDocuments(let documnets):
-            state.documents = documnets
+        case .setDocuments(let documents):
+            let remainAnswerCount = max(documents.totalCount - documents.answerCount, 0)
+            if remainAnswerCount > 0 {
+                state.answerText = "\(remainAnswerCount)문제 남았어요."
+            } else {
+                state.answerText = "모든 문제를 풀었습니다."
+            }
         }
         return state
     }

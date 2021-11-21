@@ -11,7 +11,14 @@ import UIKit
 class SubjectCardCell: UICollectionViewCell {
     
     private struct Metrics {
-        static let padding: CGFloat = 24
+        static let subjectLeft: CGFloat = 24
+        static let padding: CGFloat = 16
+        static let countTop: CGFloat = 6
+        
+        static let cellHeight: CGFloat = 120
+        static let iconPadding: CGFloat = 10
+        static let iconSize: CGFloat = cellHeight - (iconPadding * 2)
+        
     }
     
     private struct Font {
@@ -19,6 +26,17 @@ class SubjectCardCell: UICollectionViewCell {
         static let subject: UIFont = FontFamily.NotoSansCJKKR.medium.font(size: 20)
     }
     
+    override var isHighlighted: Bool {
+        didSet {
+            UIView.animate(withDuration: 0.3, delay: 0, options: []) {
+                if self.isHighlighted {
+                    self.transform = .init(scaleX: 0.9, y: 0.9)
+                } else {
+                    self.transform = .identity
+                }
+            }
+        }
+    }
     private let thumbnailImageView: UIImageView = {
         let image = UIImageView()
         return image
@@ -50,31 +68,10 @@ class SubjectCardCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.layer.masksToBounds = true
-//
-//        self.thumbnailImageView.layer.cornerRadius = Metrics.thumbSize / 2
-//        self.thumbnailImageView.layer.masksToBounds = true
-//
         self.contentView.addSubview(self.thumbnailImageView)
         self.contentView.addSubview(self.dividerView)
         self.contentView.addSubview(self.subjectLabel)
         self.contentView.addSubview(self.countLabel)
-//
-//        self.thumbnailImageView.snp.makeConstraints {
-//            $0.leading.equalToSuperview().inset(Metrics.left)
-//            $0.centerY.equalToSuperview()
-//            $0.size.equalTo(Metrics.thumbSize)
-//        }
-//
-//        self.titleLabel.snp.makeConstraints {
-//            $0.leading.equalTo(self.thumbnailImageView.snp.trailing).offset(Metrics.titleLeft)
-//            $0.trailing.equalToSuperview().inset(Metrics.right)
-//            $0.top.equalTo(self.thumbnailImageView)
-//        }
-//
-//        self.buildUpCountLabel.snp.makeConstraints {
-//            $0.trailing.equalTo(self.titleLabel)
-//            $0.bottom.equalToSuperview().inset(Metrics.bottom)
-//        }
     }
     
     required init?(coder: NSCoder) {
@@ -84,25 +81,24 @@ class SubjectCardCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.layer.masksToBounds = false
-        self.dividerView.left = self.bounds.left + 16
+        self.dividerView.left = self.bounds.left + Metrics.padding
         self.dividerView.width = 3
-        self.dividerView.top  = self.bounds.top + 24
+        self.dividerView.top  = self.bounds.top + Metrics.subjectLeft
         self.dividerView.height = Font.subject.lineHeight
         
         self.subjectLabel.sizeToFit()
-        self.subjectLabel.left = self.dividerView.right + 16
+        self.subjectLabel.left = self.dividerView.right + Metrics.padding
         self.subjectLabel.top = self.dividerView.top
-        
         
         self.countLabel.sizeToFit()
         self.countLabel.left = self.subjectLabel.left
-        self.countLabel.top = self.subjectLabel.bottom + 6
+        self.countLabel.top = self.subjectLabel.bottom + Metrics.countTop
         
-        let iconSize: CGSize = .init(width: self.height, height: self.height)
+        let iconSize: CGSize = .init(width: Metrics.iconSize, height: Metrics.iconSize)
         self.thumbnailImageView.sizeToFit()
         self.thumbnailImageView.size = iconSize
-        self.thumbnailImageView.right = self.bounds.right  - 16
-        self.thumbnailImageView.top = self.bounds.top
+        self.thumbnailImageView.right = self.bounds.right - Metrics.iconPadding
+        self.thumbnailImageView.top = self.bounds.top + Metrics.iconPadding
     }
     
     private func setGradientLayer(color: UIColor) {
@@ -115,7 +111,7 @@ class SubjectCardCell: UICollectionViewCell {
             gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
             gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
             gradientLayer.masksToBounds = false
-            gradientLayer.cornerRadius = snap(self.height / 5)
+            gradientLayer.cornerRadius = round(self.height / 5)
             gradientLayer.shadowOffset = .init(width: 0, height: 1.5)
             gradientLayer.shadowColor = color.cgColor
             gradientLayer.shadowOpacity = 0.4
@@ -126,6 +122,7 @@ class SubjectCardCell: UICollectionViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.countLabel.text = ""
         self.disposeBag = DisposeBag()
         self.thumbnailImageView.kf.cancelDownloadTask()
     }
@@ -150,19 +147,27 @@ extension SubjectCardCell: ReactorKit.View, HasDisposeBag {
                 self.configCell(item)
             })
             .disposed(by: self.disposeBag)
+        
+        reactor.state.map { $0.answerText }
+            .filterNil()
+            .distinctUntilChanged()
+            .do(afterNext: { [weak self] _ in
+                self?.countLabel.sizeToFit()
+            })
+            .bind(to: self.countLabel.rx.text)
+            .disposed(by: self.disposeBag)
     }
     
     private func configCell(_ item: DocumentSubject) {
         self.subjectLabel.text = item.title
         self.setGradientLayer(color: UIColor(hex: item.color))
         self.thumbnailImageView.alpha = 0.6
-        self.thumbnailImageView.kf.setImage(with: URL(string: item.thumbnail ?? ""))
-        self.countLabel.text = "3문제 남았어요."
+        self.thumbnailImageView.kf.setImage(with: URL(string: item.thumbnail ?? ""), options: [.transition(.fade(1))])
     }
 }
 
 extension SubjectCardCell {
     class func size(_ width: CGFloat, _ reactor: SubjectCardCellReactor) -> CGSize {
-        return .init(width: width, height: 120)
+        return .init(width: width, height: Metrics.cellHeight)
     }
 }

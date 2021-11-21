@@ -79,7 +79,8 @@ extension UIDocumentCellReactor {
         
         let choiceSectionItems = serverQuestion.choices
             .map { choice in
-                let isChecked = (choice.answer == serverAnswer?.answer) == true
+                let remoteAnswer = self.currentState.selcetedAnswer?.answer ?? serverAnswer?.answer
+                let isChecked = (choice.answer == remoteAnswer) == true
                 return UIDocumentAnswerCellReactor(docId: serverQuestion.docId, choice: choice, isChecked: isChecked)
             }
             .map(DocumentSectionItem.checkChioce)

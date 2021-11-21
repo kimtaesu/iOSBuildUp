@@ -80,6 +80,8 @@ class BaseViewController: UIViewController {
 
     override func viewDidLoad() {
         self.view.setNeedsUpdateConstraints()
+        // enable navigation swipe back
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     override func updateViewConstraints() {
